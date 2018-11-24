@@ -37,7 +37,7 @@ public class GameControllManager : MonoBehaviour {
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
         
         // Getting root reference from firebase.
-        DatabaseReference mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+        mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 
 	}
 	
@@ -76,8 +76,13 @@ public class GameControllManager : MonoBehaviour {
         mDatabaseRef.Child("users").Child(userId).SetRawJsonValueAsync(json);
     }
 
-    public void InputCallBack(string userName) {
+    public void InputCallBack() {
+        string userName = nameInput.text;
         string newId = mDatabaseRef.Child("users").Push().Key;
+
+        if (score < 0) {
+            score = 0;
+        }
 
         writeNewUser(newId, userName, score);
     }

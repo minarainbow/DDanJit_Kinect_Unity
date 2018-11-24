@@ -40,7 +40,7 @@ public class LeaderboardController : MonoBehaviour {
             } else if (task.IsCompleted) {
                 Firebase.Database.DataSnapshot snapshot = 
                     task.Result;
-                int i = 0;
+                int i = (int)snapshot.ChildrenCount - 1;
                 foreach (var childSnapshot in snapshot.Children) {
                     textIndexArray[i].enabled = true;
                     textScoreLabelArray[i].enabled = true;
@@ -58,7 +58,7 @@ public class LeaderboardController : MonoBehaviour {
                     scoreText.enabled = true;
                     textScoreArray[i] = scoreText;
 
-                    i++;
+                    i--;
                 }
             }
         });
