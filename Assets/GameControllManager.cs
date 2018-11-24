@@ -12,7 +12,8 @@ public class GameControllManager : MonoBehaviour {
     public static bool punished;
     public static bool hasTurned;
     public static int score;
-    
+
+    public float timeThreshold = 5;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -23,6 +24,7 @@ public class GameControllManager : MonoBehaviour {
     Color color0 = Color.red;
     Color color1 = Color.blue;
     float duration = 1.0f;
+    float time;
 
     DatabaseReference mDatabaseRef;
 
@@ -52,6 +54,9 @@ public class GameControllManager : MonoBehaviour {
          // Add the light component
         lightComp = lightGameObject.AddComponent<Light>();
 
+        // Set initial time
+        time = 0.0f;
+
         Vector3 pos = scoreText.transform.position;
         pos.x += 1.2f;
         pos.y -= 0.4f;
@@ -67,6 +72,11 @@ public class GameControllManager : MonoBehaviour {
         }
 
         if (!gameOver) {
+            time += Time.deltaTime;
+            if (time > timeThreshold) {
+                gameOver = true;
+            }
+
             // general mode
             if(!punished){
                 scoreText.text = "Score: " + score;
