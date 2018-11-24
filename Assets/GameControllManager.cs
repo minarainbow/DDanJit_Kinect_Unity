@@ -60,6 +60,12 @@ public class GameControllManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        // For debugging
+        if (Input.GetKeyDown("q"))
+        {
+            gameOver = true;
+        }
+
         if (!gameOver) {
             // general mode
             if(!punished){
