@@ -18,8 +18,6 @@ public class GameControllManager : MonoBehaviour {
     public Text finalScoreText;
     public InputField nameInput;
     public GameObject panel;
-    public GameObject lightGameObject;
-    public Light lightComp;
     Color color0 = Color.red;
     Color color1 = Color.blue;
     float duration = 1.0f;
@@ -47,15 +45,10 @@ public class GameControllManager : MonoBehaviour {
         DatabaseReference mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 
         // Make a game object
-        lightGameObject = new GameObject("The Light");
+        GameObject lightGameObject = new GameObject("The Light");
 
          // Add the light component
-        lightComp = lightGameObject.AddComponent<Light>();
-
-        Vector3 pos = scoreText.transform.position;
-        pos.x += 1.2f;
-        pos.y -= 0.4f;
-        scoreText.transform.position = pos;
+        Light lightComp = lightGameObject.AddComponent<Light>();
 	}
 	
 	// Update is called once per frame
@@ -73,9 +66,12 @@ public class GameControllManager : MonoBehaviour {
                 
                 if (score < 0) {
                     punished = true;
+                    gameOver = true;
                     Debug.Log("punished mode\n");
                     // Set color and position
-                    lightComp.color = Color.red;
+                    lightComp.color = Color.blue;
+
+                    // Set the position (or any transform property)
                     lightGameObject.transform.position = new Vector3(0, 5, 0);
                 }
             }
@@ -90,6 +86,10 @@ public class GameControllManager : MonoBehaviour {
                 }
             }
         } else {
+            RenderSettings.ambientSkyColor = Color.red;
+            GetComponent<Light>().color -= (Color.white / 2.0f) * Time.deltaTime;
+            float t = Mathf.PingPong(Time.time, duration) / duration;
+            GetComponent<Light>().color = Color.Lerp(color0, color1, t);
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
             gameOverText.enabled = true;

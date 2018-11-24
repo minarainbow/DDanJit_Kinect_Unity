@@ -51,11 +51,6 @@ public class GameControllManager : MonoBehaviour {
 
          // Add the light component
         lightComp = lightGameObject.AddComponent<Light>();
-
-        Vector3 pos = scoreText.transform.position;
-        pos.x += 1.2f;
-        pos.y -= 0.4f;
-        scoreText.transform.position = pos;
 	}
 	
 	// Update is called once per frame
@@ -76,6 +71,8 @@ public class GameControllManager : MonoBehaviour {
                     Debug.Log("punished mode\n");
                     // Set color and position
                     lightComp.color = Color.red;
+
+                    // Set the position (or any transform property)
                     lightGameObject.transform.position = new Vector3(0, 5, 0);
                 }
             }

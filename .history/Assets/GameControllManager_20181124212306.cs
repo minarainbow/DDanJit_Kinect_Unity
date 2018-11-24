@@ -53,8 +53,8 @@ public class GameControllManager : MonoBehaviour {
         lightComp = lightGameObject.AddComponent<Light>();
 
         Vector3 pos = scoreText.transform.position;
-        pos.x += 1.2f;
-        pos.y -= 0.4f;
+        pos.x += 0.8;
+        pos.y -= 0.4;
         scoreText.transform.position = pos;
 	}
 	

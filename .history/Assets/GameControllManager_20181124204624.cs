@@ -18,11 +18,6 @@ public class GameControllManager : MonoBehaviour {
     public Text finalScoreText;
     public InputField nameInput;
     public GameObject panel;
-    public GameObject lightGameObject;
-    public Light lightComp;
-    Color color0 = Color.red;
-    Color color1 = Color.blue;
-    float duration = 1.0f;
 
     DatabaseReference mDatabaseRef;
 
@@ -46,16 +41,6 @@ public class GameControllManager : MonoBehaviour {
         // Getting root reference from firebase.
         DatabaseReference mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 
-        // Make a game object
-        lightGameObject = new GameObject("The Light");
-
-         // Add the light component
-        lightComp = lightGameObject.AddComponent<Light>();
-
-        Vector3 pos = scoreText.transform.position;
-        pos.x += 1.2f;
-        pos.y -= 0.4f;
-        scoreText.transform.position = pos;
 	}
 	
 	// Update is called once per frame
@@ -74,9 +59,7 @@ public class GameControllManager : MonoBehaviour {
                 if (score < 0) {
                     punished = true;
                     Debug.Log("punished mode\n");
-                    // Set color and position
-                    lightComp.color = Color.red;
-                    lightGameObject.transform.position = new Vector3(0, 5, 0);
+                    RenderSettings.ambientSkyColor = Color.red;
                 }
             }
             // punished mode

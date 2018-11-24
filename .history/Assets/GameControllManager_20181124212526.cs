@@ -54,7 +54,7 @@ public class GameControllManager : MonoBehaviour {
 
         Vector3 pos = scoreText.transform.position;
         pos.x += 1.2f;
-        pos.y -= 0.4f;
+        pos.y -= 0.6f;
         scoreText.transform.position = pos;
 	}
 	

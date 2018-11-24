@@ -53,9 +53,7 @@ public class GameControllManager : MonoBehaviour {
         lightComp = lightGameObject.AddComponent<Light>();
 
         Vector3 pos = scoreText.transform.position;
-        pos.x += 1.2f;
-        pos.y -= 0.4f;
-        scoreText.transform.position = pos;
+        pos.x += 30;
 	}
 	
 	// Update is called once per frame
