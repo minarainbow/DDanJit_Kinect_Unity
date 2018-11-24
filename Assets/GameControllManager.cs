@@ -66,11 +66,6 @@ public class GameControllManager : MonoBehaviour {
             nameInput.enabled = true;
 
             finalScoreText.text = score.ToString();
-            nameInput.onEndEdit.AddListener(delegate
-            {
-                string newId = mDatabaseRef.Child("users").Push().Key;
-                writeNewUser(newId, nameInput.text, score);
-            });
         }
 	}
     
@@ -79,5 +74,11 @@ public class GameControllManager : MonoBehaviour {
         string json = JsonUtility.ToJson(user);
         
         mDatabaseRef.Child("users").Child(userId).SetRawJsonValueAsync(json);
+    }
+
+    public void InputCallBack(string userName) {
+        string newId = mDatabaseRef.Child("users").Push().Key;
+
+        writeNewUser(newId, userName, score);
     }
 }

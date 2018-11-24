@@ -1,11 +1,12 @@
 ﻿<Properties StartupConfiguration="{1AF67C3E-E1AA-A473-F14B-B56BD4E3856E}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Classroom/Scripts/CharacterControl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GameSceneManager.cs">
     <Files>
       <File FileName="Assets/LeaderboardController.cs" Line="32" Column="10" />
       <File FileName="Assets/GameControllManager.cs" Line="70" Column="14" />
       <File FileName="Assets/User.cs" Line="1" Column="1" />
-      <File FileName="Assets/Classroom/Scripts/CharacterControl.cs" Line="29" Column="1" />
+      <File FileName="Assets/Classroom/Scripts/CharacterControl.cs" Line="11" Column="28" />
+      <File FileName="Assets/GameSceneManager.cs" Line="6" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
