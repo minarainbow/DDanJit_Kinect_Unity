@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "424696153283",
+    "firebase_url": "https://ddanjit-f2f5d.firebaseio.com",
+    "project_id": "ddanjit-f2f5d",
+    "storage_bucket": "ddanjit-f2f5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424696153283:android:eecb093ef7491ace",
+        "android_client_info": {
+          "package_name": "com.ddanjit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424696153283-71233pb0ehg1e2717dcvtvmvungetqk9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs8hB_SYxkNamOFD0cvtkpB3jM9xOshEM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
