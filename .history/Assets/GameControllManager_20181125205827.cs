@@ -67,33 +67,35 @@ public class GameControllManager : MonoBehaviour {
         motionText.color = Color.blue;
 
         mg = GetComponent<MotionGenerator>();
-        motion = generateMotion();
+        // motion = generateMotion();
         motionText.text = "Motion : " + motion;
         timer = 20.0f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        timer -= 0.01f;
-        if (timer < 0){
-            motion = generateMotion();
-            motionText.text = "Motion : " + motion;
-        }
+        // timer -= 0.01f;
+        // if (timer < 0){
+        //     motion = generateMotion();
+        // }
         if (!gameOver) {
             // general mode
             scoreText.text = "Score: " + score;
             motionText.text = "Motion : " + motion;
             // professor turned around
             if(Input.anyKeyDown && hasTurned){
+                Debug.Log("here\n");
                 score -= 3;
             }
             else if(Input.anyKeyDown && !hasTurned){
                 switch (motion){
                     case 0:
                         if(Input.GetKeyDown("a")){
+                            Debug.Log("why here\n");
                             score ++;
                         }
                         else if(Input.anyKeyDown){
+                            Debug.Log("why here!!!!!\n");
                             if(punished)
                                 gameOver = true;
                             else
@@ -102,6 +104,7 @@ public class GameControllManager : MonoBehaviour {
                             
                         break;
                     case 1:
+                        Debug.Log("here..?\n");
                         if(Input.GetKeyDown("b"))
                             score ++;
                         else if(Input.anyKeyDown)
@@ -129,6 +132,7 @@ public class GameControllManager : MonoBehaviour {
                                 score --;
                         break;
                 }
+                Debug.Log("got it correct, generate a new one\n");
                 motion = generateMotion();
                 motionText.text = "Motion : " + motion;
             }

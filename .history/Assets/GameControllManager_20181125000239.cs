@@ -13,9 +13,7 @@ public class GameControllManager : MonoBehaviour {
     public static bool hasTurned;
     public static int score;
     public static int motion;
-    public static float timer;
     
-    public Text motionText;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -23,7 +21,6 @@ public class GameControllManager : MonoBehaviour {
     public GameObject panel;
     public GameObject lightGameObject;
     public Light lightComp;
-    public MotionGenerator mg;
 
     DatabaseReference mDatabaseRef;
 
@@ -36,8 +33,8 @@ public class GameControllManager : MonoBehaviour {
         finalScoreText.enabled = false;
         nameInput.enabled = false;
         panel.SetActive(false);
+
         score = 0;
-        
 //        scoreText = GetComponent <Text> ();
 //        gameOverText = GetComponent <Text> ();
 
@@ -58,53 +55,35 @@ public class GameControllManager : MonoBehaviour {
         pos.y -= 0.1f;
         scoreText.transform.position = pos;
         scoreText.color = Color.red;
-        
-        // motionText.transform.position = new Vector3(-210, 80, 0);
-        Vector3 pos2 = motionText.transform.position;
-        pos2.x += 0.2f;
-        pos2.y -= 0.15f;
-        motionText.transform.position = pos2;
-        motionText.color = Color.blue;
 
-        mg = GetComponent<MotionGenerator>();
-        motion = generateMotion();
-        motionText.text = "Motion : " + motion;
-        timer = 20.0f;
+        MotionGenerator mg = gameobject.GetComponent<MotionGenerator>();
+        motion = mg.generateMotion();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        timer -= 0.01f;
-        if (timer < 0){
-            motion = generateMotion();
-            motionText.text = "Motion : " + motion;
-        }
         if (!gameOver) {
             // general mode
             scoreText.text = "Score: " + score;
-            motionText.text = "Motion : " + motion;
             // professor turned around
-            if(Input.anyKeyDown && hasTurned){
+            if(Input.anyKey && hasTurned){
                 score -= 3;
             }
-            else if(Input.anyKeyDown && !hasTurned){
+            else if(!hasTurned){
                 switch (motion){
                     case 0:
-                        if(Input.GetKeyDown("a")){
+                        if(Input.GetKeyDown("a"))
                             score ++;
-                        }
-                        else if(Input.anyKeyDown){
+                        else if(Inpu.anyKey)
                             if(punished)
                                 gameOver = true;
                             else
                                 score --;
-                        }
-                            
                         break;
                     case 1:
                         if(Input.GetKeyDown("b"))
                             score ++;
-                        else if(Input.anyKeyDown)
+                        else if(Inpu.anyKey)
                             if(punished)
                                 gameOver = true;
                             else
@@ -113,7 +92,7 @@ public class GameControllManager : MonoBehaviour {
                     case 2:
                         if(Input.GetKeyDown("c"))
                             score ++;
-                        else if(Input.anyKeyDown)
+                        else if(Inpu.anyKey)
                             if(punished)
                                 gameOver = true;
                             else
@@ -122,15 +101,14 @@ public class GameControllManager : MonoBehaviour {
                     case 3:
                         if(Input.GetKeyDown("d"))
                             score ++;
-                        else if(Input.anyKeyDown)
+                        else if(Inpu.anyKey)
                             if(punished)
                                 gameOver = true;
                             else
                                 score --;
                         break;
                 }
-                motion = generateMotion();
-                motionText.text = "Motion : " + motion;
+                motion = mg.generateMotion();
             }
             if (score < 0 && !punished) {
                 punished = true;
@@ -169,12 +147,6 @@ public class GameControllManager : MonoBehaviour {
         }
 
         writeNewUser(newId, userName, score);
-    }
-
-    public int generateMotion(){
-        int motion;
-        motion = Random.Range(0,4);
-        return motion;
     }
 
 
