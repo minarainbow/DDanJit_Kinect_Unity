@@ -97,9 +97,9 @@ public class GameControllManager : MonoBehaviour {
 
         if (!gameOver) {
             time += Time.deltaTime;
-            // if (time > timeThreshold) {
-            //     gameOver = true;
-            // }
+            if (time > timeThreshold) {
+                gameOver = true;
+            }
 
             // general mode
             scoreText.text = "Score: " + score;

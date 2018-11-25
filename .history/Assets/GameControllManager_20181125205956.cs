@@ -16,8 +16,6 @@ public class GameControllManager : MonoBehaviour {
     public static float timer;
     
     public Text motionText;
-
-    public float timeThreshold = 50;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -26,10 +24,6 @@ public class GameControllManager : MonoBehaviour {
     public GameObject lightGameObject;
     public Light lightComp;
     public MotionGenerator mg;
-    Color color0 = Color.red;
-    Color color1 = Color.blue;
-    float duration = 1.0f;
-    float time;
 
     DatabaseReference mDatabaseRef;
 
@@ -59,9 +53,6 @@ public class GameControllManager : MonoBehaviour {
          // Add the light component
         lightComp = lightGameObject.AddComponent<Light>();
 
-        // Set initial time
-        time = 0.0f;
-
         Vector3 pos = scoreText.transform.position;
         pos.x += 0.2f;
         pos.y -= 0.1f;
@@ -83,24 +74,12 @@ public class GameControllManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        // For debugging
-        if (Input.GetKeyDown("q"))
-        {
-            gameOver = true;
-        }
-
         timer -= 0.01f;
         if (timer < 0){
             motion = generateMotion();
             motionText.text = "Motion : " + motion;
         }
-
         if (!gameOver) {
-            time += Time.deltaTime;
-            // if (time > timeThreshold) {
-            //     gameOver = true;
-            // }
-
             // general mode
             scoreText.text = "Score: " + score;
             motionText.text = "Motion : " + motion;
@@ -156,7 +135,6 @@ public class GameControllManager : MonoBehaviour {
             if (score < 0 && !punished) {
                 punished = true;
                 Debug.Log("punished mode\n");
-                score = 0;
                 // Set color and position
                 lightComp.color = Color.red;
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
