@@ -17,7 +17,7 @@ public class GameControllManager : MonoBehaviour {
     
     public Text motionText;
 
-    public float timeThreshold = 50;
+    public float timeThreshold = 5;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -97,9 +97,9 @@ public class GameControllManager : MonoBehaviour {
 
         if (!gameOver) {
             time += Time.deltaTime;
-            // if (time > timeThreshold) {
-            //     gameOver = true;
-            // }
+            if (time > timeThreshold) {
+                gameOver = true;
+            }
 
             // general mode
             scoreText.text = "Score: " + score;
