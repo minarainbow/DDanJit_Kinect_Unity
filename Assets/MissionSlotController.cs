@@ -52,7 +52,7 @@ public class MissionSlot
     }
 }
 
-public class MissionSlotController : MonoBehaviour {
+public class MissionSlotController {
 
     public Transform Spawnpoint;
     public GameObject MissionSlotPrefab;
@@ -66,12 +66,14 @@ public class MissionSlotController : MonoBehaviour {
         MissionSlot ms = new MissionSlot(motion);
 
         MissionSlotList.Add(ms);
+        /*
         for (int i = 0; i < MissionSlotList.Count; i++)
         {
             MissionSlot m = MissionSlotList[i];
             Debug.Log(string.Format("Mission {0}: {1} {2}", i, m.GetMissionID(), (MissionSlot.SlotStatus)m.GetStatus()));
         }
         Debug.Log("\n");
+        */
     }
     
     /* This function does not actually remove a mission slot,
