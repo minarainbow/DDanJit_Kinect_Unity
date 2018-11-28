@@ -14,6 +14,8 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static int motion;
     public static float timer;
+    AudioSource speaker; 
+    public AudioClip bgm; 
     
     public Text motionText;
 
@@ -43,9 +45,9 @@ public class GameControllManager : MonoBehaviour {
         nameInput.enabled = false;
         panel.SetActive(false);
         score = 0;
-        
-//        scoreText = GetComponent <Text> ();
-//        gameOverText = GetComponent <Text> ();
+
+        speaker = GetComponent<AudioSource>();
+        speaker.Play();
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
