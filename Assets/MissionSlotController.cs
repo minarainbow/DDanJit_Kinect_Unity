@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class MissionSlot
 {
-    enum SlotStatus { Normal, Blinking, Removed };
+    public enum SlotStatus { Normal, Blinking, Removed };
 
     int missionID; // TODO: need to match with mission data type
     int score;
     DateTime TimeCreated;
     int status;
+    bool IsCorrect;
 
     public MissionSlot(int mID)
     {
@@ -18,6 +19,7 @@ public class MissionSlot
         score = 10;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
+        IsCorrect = false;
     }
 
     public bool IsBlinking()
@@ -27,8 +29,26 @@ public class MissionSlot
 
     public bool IsTimeout()
     {
-        DateTime CurrentTIme = DateTime.Now;
+        double SecondsElapsed = (DateTime.Now - TimeCreated).TotalSeconds;
+
+        // TODO: Check timeout here (in seconds)
+
         return false;
+    }
+
+    public int GetMissionID()
+    {
+        return missionID;
+    }
+
+    public int GetStatus()
+    {
+        return status;
+    }
+
+    public void UpdateStatus(int newstatus)
+    {
+        status = newstatus;
     }
 }
 
@@ -37,44 +57,49 @@ public class MissionSlotController : MonoBehaviour {
     public Transform Spawnpoint;
     public GameObject MissionSlotPrefab;
 
-    List<MissionSlot> MissionSlotList;
+    List<MissionSlot> MissionSlotList = new List<MissionSlot>();
 
-    void SpawnMissionSlot()
+    // Add a mission slot with MissionID motion to list
+    public void SpawnMissionSlot(int motion)
     {
-        Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
-        MissionSlot ms = new MissionSlot(0);
+        // Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
+        MissionSlot ms = new MissionSlot(motion);
+
         MissionSlotList.Add(ms);
-    }
-
-
-    void DestroyMissionSlot(int i)
-    {
-        // Archive removed slot?
-        MissionSlotList.RemoveAt(i);
-    }
-
-    // Use this for initialization
-    void Start () {
-        MissionSlotList = new List<MissionSlot>();
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        for (var i = 0; i < MissionSlotList.Count; i++)
+        for (int i = 0; i < MissionSlotList.Count; i++)
         {
-            MissionSlot ms = MissionSlotList[i];
-            if (ms.IsTimeout())
-            {
-                DestroyMissionSlot(i);
-            }
-            else if (ms.IsBlinking())
-            {
-                // TODO: change status to Blink
-            }
-            else
-            {
-
-            }
+            MissionSlot m = MissionSlotList[i];
+            Debug.Log(string.Format("Mission {0}: {1} {2}", i, m.GetMissionID(), (MissionSlot.SlotStatus)m.GetStatus()));
         }
-	}
+        Debug.Log("\n");
+    }
+    
+    /* This function does not actually remove a mission slot,
+     * but only sets mission status to 'Removed' */
+    public void RemoveMissionSlot(int motion)
+    {
+        int index = MissionSlotList.FindIndex(x => (x.GetMissionID() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
+        MissionSlot ms = MissionSlotList[index];
+        ms.UpdateStatus((int)MissionSlot.SlotStatus.Removed);
+        MissionSlotList[index] = ms;
+        
+    }
+
+    /* Check for any time-out missions, and remove them
+     * Also change visibility features in this function */
+    public void CheckMissionTimer()
+    {
+        for (int i = 0; i < MissionSlotList.Count; i++)
+        {
+            MissionSlot m = MissionSlotList[i];
+
+            // Check for time-out mission
+            if (m.IsTimeout())
+            {
+                RemoveMissionSlot(m.GetMissionID());
+            }
+
+            // Change visibility features, if any
+        }
+    }
 }
