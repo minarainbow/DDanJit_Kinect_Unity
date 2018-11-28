@@ -16,7 +16,7 @@ public class MissionSlot
     public MissionSlot(int mID)
     {
         missionID = mID;
-        score = 1;
+        score = 10;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
         IsCorrect = false;

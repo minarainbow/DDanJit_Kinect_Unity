@@ -121,7 +121,7 @@ public class GameControllManager : MonoBehaviour {
             motionText.text = "Motion : " + motion;
             // professor turned around
             if(Input.anyKeyDown && hasTurned){
-                score -= 3;
+                OnSpotted();
             }
             else if(Input.anyKeyDown && !hasTurned){
                 if (motions.ContainsKey(motion))
@@ -135,13 +135,8 @@ public class GameControllManager : MonoBehaviour {
                 motion = generateMotion();
                 motionText.text = "Motion : " + motion;
             }
-            if (score < 0 && !punished) {
-                punished = true;
-                Debug.Log("punished mode\n");
+            if (score < 0) {
                 score = 0;
-                // Set color and position
-                lightComp.color = Color.red;
-                lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
             msc.CheckMissionTimer();
         } else {
@@ -185,14 +180,36 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion()
     {
-        score += msc.OnCorrectAnswer(motion);
+        double multiplier = punished ? 1.5 : 1;
+        score += (int)(msc.OnCorrectAnswer(motion) * multiplier);
     }
 
     public void OnWrongMotion()
     {
+        return;
         if (punished)
             gameOver = true;
         else
             score += msc.OnWrongAnswer(motion);
+    }
+
+    public void OnSpotted()
+    {
+        // Spotted twice, game over
+        if (punished)
+            gameOver = true;
+        // Change to punish mode
+        else
+            SetPunish();
+    }
+
+    public void SetPunish()
+    {
+        Debug.Log("now punished mode\n");
+        punished = true;
+
+        // Set color and position
+        lightComp.color = Color.red;
+        lightGameObject.transform.position = new Vector3(0, 5, 0);
     }
 }
