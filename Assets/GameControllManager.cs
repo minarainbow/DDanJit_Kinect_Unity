@@ -14,6 +14,8 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static int motion;
     public static float timer;
+    public static float gameTime; // for total game time.
+    public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     
     public Text motionText;
 
@@ -79,6 +81,10 @@ public class GameControllManager : MonoBehaviour {
         motion = generateMotion();
         motionText.text = "Motion : " + motion;
         timer = 20.0f;
+
+        // For clock actions
+        gameTotalThreshold = timeThreshold;
+        gameTime = 0.0f;
 	}
 	
 	// Update is called once per frame
@@ -97,9 +103,10 @@ public class GameControllManager : MonoBehaviour {
 
         if (!gameOver) {
             time += Time.deltaTime;
-            // if (time > timeThreshold) {
-            //     gameOver = true;
-            // }
+            gameTime += Time.deltaTime;
+            if (gameTime > timeThreshold) {
+                 gameOver = true;
+             }
 
             // general mode
             scoreText.text = "Score: " + score;
