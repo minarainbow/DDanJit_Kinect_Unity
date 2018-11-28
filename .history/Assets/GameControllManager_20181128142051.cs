@@ -16,7 +16,7 @@ public class GameControllManager : MonoBehaviour {
     public static float timer;
     AudioSource speaker; 
     public AudioClip bgm; 
-    // public GameObject gameOverSound;
+    public GameObject gameOverSound;
     
     public Text motionText;
 
@@ -120,7 +120,7 @@ public class GameControllManager : MonoBehaviour {
                         else if(Input.anyKeyDown){
                             if(punished){
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -133,7 +133,7 @@ public class GameControllManager : MonoBehaviour {
                         else if(Input.anyKeyDown)
                             if(punished){
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -144,7 +144,7 @@ public class GameControllManager : MonoBehaviour {
                         else if(Input.anyKeyDown)
                             if(punished){
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -155,7 +155,7 @@ public class GameControllManager : MonoBehaviour {
                         else if(Input.anyKeyDown)
                             if(punished){
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -173,7 +173,7 @@ public class GameControllManager : MonoBehaviour {
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
         } else {
-            // speaker.Pause();
+            speaker.Pause();
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
             gameOverText.enabled = true;

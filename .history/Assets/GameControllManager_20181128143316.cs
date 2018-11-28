@@ -14,9 +14,6 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static int motion;
     public static float timer;
-    AudioSource speaker; 
-    public AudioClip bgm; 
-    // public GameObject gameOverSound;
     
     public Text motionText;
 
@@ -36,8 +33,10 @@ public class GameControllManager : MonoBehaviour {
 
     DatabaseReference mDatabaseRef;
 
-	// Use this for initialization
-	void Start () {
+    MissionSlotController msc = new MissionSlotController();
+
+    // Use this for initialization
+    void Start () {
         hasTurned = false;
         gameOver = false;
         punished = false;
@@ -47,8 +46,8 @@ public class GameControllManager : MonoBehaviour {
         panel.SetActive(false);
         score = 0;
 
-        speaker = GetComponent<AudioSource>();
-        speaker.Play();
+//        scoreText = GetComponent <Text> ();
+//        gameOverText = GetComponent <Text> ();
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
@@ -114,14 +113,13 @@ public class GameControllManager : MonoBehaviour {
             else if(Input.anyKeyDown && !hasTurned){
                 switch (motion){
                     case 0:
-                        if(Input.GetKeyDown("a")){
-                            score ++;
+                        if(Input.GetKeyDown("a"))
+                        {
+                            OnCorrectMotion();
                         }
                         else if(Input.anyKeyDown){
-                            if(punished){
+                            if(punished)
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
-                            }
                             else
                                 score --;
                         }
@@ -129,36 +127,30 @@ public class GameControllManager : MonoBehaviour {
                         break;
                     case 1:
                         if(Input.GetKeyDown("b"))
-                            score ++;
+                            OnCorrectMotion();
                         else if(Input.anyKeyDown)
-                            if(punished){
+                            if(punished)
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
-                            }
                             else
                                 score --;
                         break;
                     case 2:
                         if(Input.GetKeyDown("c"))
-                            score ++;
+                            OnCorrectMotion();
                         else if(Input.anyKeyDown)
-                            if(punished){
+                            if(punished)
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
-                            }
                             else
                                 score --;
                         break;
                     case 3:
-                        if(Input.GetKeyDown("d"))
-                            score ++;
-                        else if(Input.anyKeyDown)
-                            if(punished){
+                        if (Input.GetKeyDown("d"))
+                            OnCorrectMotion();
+                        else if (Input.anyKeyDown)
+                            if (punished)
                                 gameOver = true;
-                                // Instantiate(gameOverSound, transform.position, Quaternion.identity);
-                            }
                             else
-                                score --;
+                                score--;
                         break;
                 }
                 motion = generateMotion();
@@ -173,7 +165,6 @@ public class GameControllManager : MonoBehaviour {
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
         } else {
-            // speaker.Pause();
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
             gameOverText.enabled = true;
@@ -208,8 +199,13 @@ public class GameControllManager : MonoBehaviour {
     public int generateMotion(){
         int motion;
         motion = Random.Range(0,4);
+        msc.SpawnMissionSlot(motion);
         return motion;
     }
 
-
+    public void OnCorrectMotion()
+    {
+        score++;
+        msc.RemoveMissionSlot(motion);
+    }
 }
