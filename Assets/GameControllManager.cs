@@ -121,43 +121,28 @@ public class GameControllManager : MonoBehaviour {
                 switch (motion){
                     case 0:
                         if(Input.GetKeyDown("a"))
-                        {
                             OnCorrectMotion();
-                        }
-                        else if(Input.anyKeyDown){
-                            if(punished)
-                                gameOver = true;
-                            else
-                                score --;
-                        }
+                        else if(Input.anyKeyDown)
+                            OnWrongMotion();
                             
                         break;
                     case 1:
                         if(Input.GetKeyDown("b"))
                             OnCorrectMotion();
                         else if(Input.anyKeyDown)
-                            if(punished)
-                                gameOver = true;
-                            else
-                                score --;
+                            OnWrongMotion();
                         break;
                     case 2:
                         if(Input.GetKeyDown("c"))
                             OnCorrectMotion();
                         else if(Input.anyKeyDown)
-                            if(punished)
-                                gameOver = true;
-                            else
-                                score --;
+                            OnWrongMotion();
                         break;
                     case 3:
                         if (Input.GetKeyDown("d"))
                             OnCorrectMotion();
                         else if (Input.anyKeyDown)
-                            if (punished)
-                                gameOver = true;
-                            else
-                                score--;
+                            OnWrongMotion();
                         break;
                 }
                 motion = generateMotion();
@@ -214,5 +199,13 @@ public class GameControllManager : MonoBehaviour {
     public void OnCorrectMotion()
     {
         score += msc.OnCorrectAnswer(motion);
+    }
+
+    public void OnWrongMotion()
+    {
+        if (punished)
+            gameOver = true;
+        else
+            score += msc.OnWrongAnswer(motion);
     }
 }

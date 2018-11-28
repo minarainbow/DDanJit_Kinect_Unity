@@ -92,9 +92,9 @@ public class MissionSlotController : MonoBehaviour {
         return RemoveMissionSlot(motion, true);
     }
 
-    public void OnWrongAnswer(int motion)
+    public int OnWrongAnswer(int motion)
     {
-        OnTimeout(motion);
+        return -1;
     }
     
     public void OnTimeout(int motion)
