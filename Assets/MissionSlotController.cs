@@ -11,6 +11,7 @@ public class MissionSlot
     int score;
     DateTime TimeCreated;
     int status;
+    bool IsCorrect;
 
     public MissionSlot(int mID)
     {
@@ -18,6 +19,7 @@ public class MissionSlot
         score = 10;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
+        IsCorrect = false;
     }
 
     public bool IsBlinking()
@@ -27,7 +29,10 @@ public class MissionSlot
 
     public bool IsTimeout()
     {
-        DateTime CurrentTIme = DateTime.Now;
+        double SecondsElapsed = (DateTime.Now - TimeCreated).TotalSeconds;
+
+        // TODO: Check timeout here (in seconds)
+
         return false;
     }
 
@@ -54,14 +59,14 @@ public class MissionSlotController : MonoBehaviour {
 
     List<MissionSlot> MissionSlotList = new List<MissionSlot>();
 
+    // Add a mission slot with MissionID motion to list
     public void SpawnMissionSlot(int motion)
     {
         // Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
         MissionSlot ms = new MissionSlot(motion);
 
         MissionSlotList.Add(ms);
-        int i;
-        for(i = 0; i < MissionSlotList.Count; i++)
+        for (int i = 0; i < MissionSlotList.Count; i++)
         {
             MissionSlot m = MissionSlotList[i];
             Debug.Log(string.Format("Mission {0}: {1} {2}", i, m.GetMissionID(), (MissionSlot.SlotStatus)m.GetStatus()));
@@ -69,6 +74,8 @@ public class MissionSlotController : MonoBehaviour {
         Debug.Log("\n");
     }
     
+    /* This function does not actually remove a mission slot,
+     * but only sets mission status to 'Removed' */
     public void RemoveMissionSlot(int motion)
     {
         int index = MissionSlotList.FindIndex(x => (x.GetMissionID() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
@@ -76,5 +83,23 @@ public class MissionSlotController : MonoBehaviour {
         ms.UpdateStatus((int)MissionSlot.SlotStatus.Removed);
         MissionSlotList[index] = ms;
         
+    }
+
+    /* Check for any time-out missions, and remove them
+     * Also change visibility features in this function */
+    public void CheckMissionTimer()
+    {
+        for (int i = 0; i < MissionSlotList.Count; i++)
+        {
+            MissionSlot m = MissionSlotList[i];
+
+            // Check for time-out mission
+            if (m.IsTimeout())
+            {
+                RemoveMissionSlot(m.GetMissionID());
+            }
+
+            // Change visibility features, if any
+        }
     }
 }

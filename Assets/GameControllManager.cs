@@ -164,6 +164,7 @@ public class GameControllManager : MonoBehaviour {
                 lightComp.color = Color.red;
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
+            msc.CheckMissionTimer();
         } else {
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
