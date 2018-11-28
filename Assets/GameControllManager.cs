@@ -32,6 +32,7 @@ public class GameControllManager : MonoBehaviour {
     Color color1 = Color.blue;
     float duration = 1.0f;
     float time;
+    Dictionary<int, string> motions;
 
     DatabaseReference mDatabaseRef;
 
@@ -47,9 +48,14 @@ public class GameControllManager : MonoBehaviour {
         nameInput.enabled = false;
         panel.SetActive(false);
         score = 0;
+        motions = new Dictionary<int, string>();
+        motions.Add(0, "a");
+        motions.Add(1, "b");
+        motions.Add(2, "c");
+        motions.Add(3, "d");
 
-//        scoreText = GetComponent <Text> ();
-//        gameOverText = GetComponent <Text> ();
+        //        scoreText = GetComponent <Text> ();
+        //        gameOverText = GetComponent <Text> ();
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
@@ -118,33 +124,14 @@ public class GameControllManager : MonoBehaviour {
                 score -= 3;
             }
             else if(Input.anyKeyDown && !hasTurned){
-                switch (motion){
-                    case 0:
-                        if(Input.GetKeyDown("a"))
-                            OnCorrectMotion();
-                        else if(Input.anyKeyDown)
-                            OnWrongMotion();
-                            
-                        break;
-                    case 1:
-                        if(Input.GetKeyDown("b"))
-                            OnCorrectMotion();
-                        else if(Input.anyKeyDown)
-                            OnWrongMotion();
-                        break;
-                    case 2:
-                        if(Input.GetKeyDown("c"))
-                            OnCorrectMotion();
-                        else if(Input.anyKeyDown)
-                            OnWrongMotion();
-                        break;
-                    case 3:
-                        if (Input.GetKeyDown("d"))
-                            OnCorrectMotion();
-                        else if (Input.anyKeyDown)
-                            OnWrongMotion();
-                        break;
+                if (motions.ContainsKey(motion))
+                {
+                    if (Input.GetKeyDown(motions[motion]))
+                        OnCorrectMotion();
+                    else if (Input.anyKeyDown)
+                        OnWrongMotion();
                 }
+
                 motion = generateMotion();
                 motionText.text = "Motion : " + motion;
             }
