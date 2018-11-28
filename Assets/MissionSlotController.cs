@@ -7,16 +7,16 @@ public class MissionSlot
 {
     public enum SlotStatus { Normal, Blinking, Removed };
 
-    int missionID; // TODO: need to match with mission data type
-    int score;
+    int missionID;
+    public int score;
     DateTime TimeCreated;
     int status;
-    bool IsCorrect;
+    public bool IsCorrect;
 
     public MissionSlot(int mID)
     {
         missionID = mID;
-        score = 10;
+        score = 1;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
         IsCorrect = false;
@@ -76,13 +76,30 @@ public class MissionSlotController : MonoBehaviour {
     
     /* This function does not actually remove a mission slot,
      * but only sets mission status to 'Removed' */
-    public void RemoveMissionSlot(int motion)
+    int RemoveMissionSlot(int motion, bool IsCorrect)
     {
         int index = MissionSlotList.FindIndex(x => (x.GetMissionID() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
         MissionSlot ms = MissionSlotList[index];
         ms.UpdateStatus((int)MissionSlot.SlotStatus.Removed);
+        ms.IsCorrect = IsCorrect;
         MissionSlotList[index] = ms;
+        return ms.score;
         
+    }
+
+    public int OnCorrectAnswer(int motion)
+    {
+        return RemoveMissionSlot(motion, true);
+    }
+
+    public void OnWrongAnswer(int motion)
+    {
+        OnTimeout(motion);
+    }
+    
+    public void OnTimeout(int motion)
+    {
+        RemoveMissionSlot(motion, false);
     }
 
     /* Check for any time-out missions, and remove them
@@ -96,10 +113,10 @@ public class MissionSlotController : MonoBehaviour {
             // Check for time-out mission
             if (m.IsTimeout())
             {
-                RemoveMissionSlot(m.GetMissionID());
+                OnTimeout(m.GetMissionID());
             }
 
-            // Change visibility features, if any
+            // TODO: Change visibility features, if any
         }
     }
 }

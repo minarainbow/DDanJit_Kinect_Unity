@@ -213,7 +213,6 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion()
     {
-        score++;
-        msc.RemoveMissionSlot(motion);
+        score += msc.OnCorrectAnswer(motion);
     }
 }
