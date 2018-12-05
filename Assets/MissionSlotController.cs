@@ -11,15 +11,19 @@ public class MissionSlot
     public int score;
     DateTime TimeCreated;
     int status;
+
+    float threshold;
+    float time;
     public bool IsCorrect;
 
-    public MissionSlot(int mID)
+    public MissionSlot(int mID, float threshold)
     {
         missionID = mID;
         score = 10;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
         IsCorrect = false;
+        this.threshold = threshold;
     }
 
     public bool IsBlinking()
@@ -29,11 +33,18 @@ public class MissionSlot
 
     public bool IsTimeout()
     {
-        double SecondsElapsed = (DateTime.Now - TimeCreated).TotalSeconds;
+        //double SecondsElapsed = (DateTime.Now - TimeCreated).TotalSeconds;
 
-        // TODO: Check timeout here (in seconds)
+        return time > threshold;
+    }
 
-        return false;
+    public int setTimeAndCheck() {
+        time += Time.deltaTime;
+        if (IsTimeout()) {
+            this.status = (int)SlotStatus.Removed;
+            return -1;
+        }
+        return 0;
     }
 
     public int GetMissionID()
@@ -59,11 +70,17 @@ public class MissionSlotController {
 
     List<MissionSlot> MissionSlotList = new List<MissionSlot>();
 
+    float timeThreshold;
+
+    public MissionSlotController(float threshold) {
+        this.timeThreshold = threshold;
+    }
+
     // Add a mission slot with MissionID motion to list
     public void SpawnMissionSlot(int motion)
     {
         // Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
-        MissionSlot ms = new MissionSlot(motion);
+        MissionSlot ms = new MissionSlot(motion, timeThreshold);
 
         MissionSlotList.Add(ms);
         /*
@@ -74,6 +91,29 @@ public class MissionSlotController {
         }
         Debug.Log("\n");
         */
+    }
+
+    // Get four opened slot
+    public List<MissionSlot> GetCurrentMissionSlots() {
+        List<MissionSlot> currentMissionSlots = new List<MissionSlot>(4);
+        int cnt = 0;
+        // TODO: 처음부터 네 개 받아오. removed말고. 
+        for (int i = 0; i < MissionSlotList.Count; i++)
+        {
+            if (!MissionSlotList[i].GetStatus().Equals(
+                MissionSlot.SlotStatus.Removed))
+            {
+                // remove가 아닌 경우
+                MissionSlotList[cnt] = MissionSlotList[i];
+                cnt++;
+            }
+
+            if (cnt > 4) {
+                break;
+            }
+        }
+
+        return currentMissionSlots;
     }
     
     /* This function does not actually remove a mission slot,
@@ -106,6 +146,7 @@ public class MissionSlotController {
 
     /* Check for any time-out missions, and remove them
      * Also change visibility features in this function */
+    //NOW UNUSED
     public void CheckMissionTimer()
     {
         for (int i = 0; i < MissionSlotList.Count; i++)
@@ -119,6 +160,20 @@ public class MissionSlotController {
             }
 
             // TODO: Change visibility features, if any
+        }
+    }
+
+    public void Update()
+    {
+        for (int i = 0; i < MissionSlotList.Count; i++) {
+            if (!MissionSlotList[i].GetStatus().Equals(
+                MissionSlot.SlotStatus.Removed)) {
+                // remove가 아닌 경우
+                if (MissionSlotList[i].setTimeAndCheck().Equals(-1)) {
+                    //SpawnMissionSlot()
+                    // TODO: Generate new motion
+                }
+            }
         }
     }
 }
