@@ -20,6 +20,7 @@ public class GameControllManager : MonoBehaviour {
     public Text motionText;
 
     public float timeThreshold = 50;
+
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -28,6 +29,7 @@ public class GameControllManager : MonoBehaviour {
     public GameObject lightGameObject;
     public Light lightComp;
     public MotionGenerator mg;
+
     Color color0 = Color.red;
     Color color1 = Color.blue;
     float duration = 1.0f;
@@ -35,7 +37,8 @@ public class GameControllManager : MonoBehaviour {
 
     DatabaseReference mDatabaseRef;
 
-    MissionSlotController msc = new MissionSlotController();
+    List<MissionSlot> missionSlots = new List<MissionSlot>(4);
+    MissionSlotController msc = new MissionSlotController(2);
 
     // Use this for initialization
     void Start () {
@@ -171,7 +174,8 @@ public class GameControllManager : MonoBehaviour {
                 lightComp.color = Color.red;
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
-            msc.CheckMissionTimer();
+
+            missionSlots = msc.GetCurrentMissionSlots();
         } else {
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
