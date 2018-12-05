@@ -48,6 +48,9 @@ public class GameControllManager : MonoBehaviour {
     List<MissionSlot> missionSlots = new List<MissionSlot>(4);
     MissionSlotController msc = new MissionSlotController(2);
 
+    Dictionary<string, string> player1KeyMap;
+    Dictionary<string, string> player2KeyMap;
+
     // Use this for initialization
     void Start () {
         hasTurned = false;
@@ -61,6 +64,16 @@ public class GameControllManager : MonoBehaviour {
 
         player1 = new Player(1);
         player2 = new Player(2);
+        player1KeyMap = new Dictionary<string, string>();
+        player1KeyMap.Add("w", "1");
+        player1KeyMap.Add("a", "2");
+        player1KeyMap.Add("s", "3");
+        player1KeyMap.Add("d", "4");
+        player2KeyMap = new Dictionary<string, string>();
+        player2KeyMap.Add("up", "1");
+        player2KeyMap.Add("left", "2");
+        player2KeyMap.Add("down", "3");
+        player2KeyMap.Add("left", "4");
 
         //        scoreText = GetComponent <Text> ();
         //        gameOverText = GetComponent <Text> ();
@@ -134,52 +147,50 @@ public class GameControllManager : MonoBehaviour {
             }
 
             else if(Input.anyKeyDown && !hasTurned){
-                // 우선은 이렇게 그지같이 짜 놓고 나중에 바꾸기
-                string[] player1_key = {
-                    "w", "s", "a", "d"
-                };
-
-                string[] player2_key = {
-                    "up", "down", "left", "right"
-                };
-
-                for (int i = 0; i < 4; i++) {
-                    if (Input.GetKeyDown(player1_key[i])) {
-                        player1.addMotion(i + 1);
-                    }
-                }
-
-                for (int i = 0; i < 4; i++)
+                bool isPlayer1, isPlayer2;
+                isPlayer1 = isPlayer2 = false;
+                foreach (string key in player1KeyMap.Keys)
                 {
-                    if (Input.GetKeyDown(player2_key[i]))
+                    if(Input.GetKeyDown(key))
                     {
-                        player2.addMotion(i + 1);
+                        player1.addMotion(player1KeyMap[key]);
+                        isPlayer1 = true;
+                    }
+                }
+                foreach (string key in player2KeyMap.Keys)
+                {
+                    if (Input.GetKeyDown(key))
+                    {
+                        player2.addMotion(player2KeyMap[key]);
+                        isPlayer2 = true;
                     }
                 }
 
+                Debug.Assert(isPlayer1 == false || isPlayer2 == false);
 
-                // TODO: Change 'motion' to per-player.
-                string motion = null;
+                if (isPlayer1 || isPlayer2)
+                {
+                    string motion = isPlayer1 ? player1.getMotion() : player2.getMotion();
+                    /* Detect key, find corresponding player, and append to 'motion'. */
+                    if (mission.Equals(motion))
+                    {
+                        OnCompletedMotion(isPlayer1);
+                    }
+                    else if (mission.StartsWith(motion))
+                    {
+                        OnCorrectMotion(isPlayer1);
+                    }
+                    else
+                    {
+                        // TODO: Change it to per-player. Handle restart in below function.
+                        OnWrongMotion(isPlayer1);
+                    }
 
-                /* Detect key, find corresponding player, and append to 'motion'. */
-                if (mission.Equals(motion))
-                {
-                    OnCompletedMotion();
+                    motion1Text.text = player1.getMotion();
+                    motion2Text.text = player2.getMotion();
+                    mission = generateMission();
+                    motionText.text = "Mission : " + mission;
                 }
-                else if (mission.StartsWith(motion))
-                {
-                    OnCorrectMotion();
-                }
-                else
-                {
-                    // TODO: Change it to per-player. Handle restart in below function.
-                    OnWrongMotion();
-                }
-
-                motion1Text.text = player1.getMotionString();
-                motion2Text.text = player2.getMotionString();
-                mission = generateMission();
-                motionText.text = "Mission : " + mission;
             }
 
             missionSlots = msc.GetCurrentMissionSlots();
@@ -219,36 +230,34 @@ public class GameControllManager : MonoBehaviour {
 
     /* Function that generates new motion.
      * Motion length is 4~8
-     * Keys: 0 - up, 1 - left, 2 - down, 3 - right */
+     * Keys: 1 - up, 2 - left, 3 - down, 4 - right */
     public string generateMission(){
         string motion = null;
-        int motionLength = Random.Range(4, 8);
+        int motionLength = Random.Range(4, 9);
         for (int i = 0; i < motionLength; i++)
         {
-            motion = motion + Random.Range(0, 4).ToString();
+            motion = motion + Random.Range(1, 5).ToString();
         }
         msc.SpawnMissionSlot(motion);
         return motion;
     }
 
-    public void OnCompletedMotion()
+    public void OnCompletedMotion(bool isPlayer1)
     {
         double multiplier = punished ? 1.5 : 1;
-        score += (int)(msc.OnCorrectAnswer(mission) * multiplier);
+        if (isPlayer1)
+            player1.addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
     }
 
-    public void OnCorrectMotion()
+    public void OnCorrectMotion(bool isPlayer1)
     {
         // TODO: Update player progress.
     }
 
-    public void OnWrongMotion()
+    public void OnWrongMotion(bool isPlayer1)
     {
+
         return;
-        if (punished)
-            gameOver = true;
-        else
-            score += msc.OnWrongAnswer(mission);
     }
 
     public void OnSpotted()
