@@ -243,7 +243,7 @@ public class GameControllManager : MonoBehaviour {
     public void showProfessorText(Text professorText)
     {
         professorText.enabled = true;
-        professorTextTimer = 0.80f;
+        professorTextTimer = 0.50f;
     }
 
     public void hideProfessorText()

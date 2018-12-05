@@ -22,7 +22,7 @@ public class GameControllManager : MonoBehaviour {
     
     public Text motionText;
 
-    public float timeThreshold = 50000;
+    public float timeThreshold = 500;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -117,10 +117,9 @@ public class GameControllManager : MonoBehaviour {
         }
 
         timer -= 0.01f;
-        if(professorTextTimer > 0.00f){
-            Debug.Log("here!\n");
+        if(professorTextTimer > 0.0f){
             professorTextTimer -= 0.01f;
-            if(professorTextTimer < 0.00f)
+            if(professorTextTimer == 0.0f)
                 hideProfessorText();
         }
         if (timer < 0){
@@ -211,9 +210,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnWrongMotion()
     {
         return;
-        if (punished){
-            showProfessorText(professorGetOutText);
-        }
+        if (punished)
+            gameOver = true;
         else
             score += msc.OnWrongAnswer(motion);
     }
@@ -221,9 +219,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnSpotted()
     {
         // Spotted twice, game over
-        if (punished){
-            showProfessorText(professorGetOutText);
-        }
+        if (punished)
+            gameOver = true;
         // Change to punish mode
         else
             SetPunish();
@@ -243,15 +240,11 @@ public class GameControllManager : MonoBehaviour {
     public void showProfessorText(Text professorText)
     {
         professorText.enabled = true;
-        professorTextTimer = 0.80f;
+        professorTextTimer = 0.3f;
     }
 
     public void hideProfessorText()
     {
-        Debug.Log("here\n");
-        if(professorGetOutText.enabled){
-            gameOver = true;
-        }
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;

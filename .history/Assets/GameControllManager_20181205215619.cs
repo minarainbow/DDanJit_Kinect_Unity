@@ -22,14 +22,13 @@ public class GameControllManager : MonoBehaviour {
     
     public Text motionText;
 
-    public float timeThreshold = 50000;
+    public float timeThreshold = 50;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
     public Text professorAnnoyedText;
     public Text professorWarnText;
     public Text professorGetOutText;
-    public float professorTextTimer = 0.0f;
     public InputField nameInput;
     public GameObject panel;
     public GameObject lightGameObject;
@@ -54,9 +53,9 @@ public class GameControllManager : MonoBehaviour {
         gameOverText.enabled = false;
         finalScoreText.enabled = false;
         nameInput.enabled = false;
-        professorAnnoyedText.enabled = false;
-        professorWarnText.enabled = false;
-        professorGetOutText.enabled = false;
+        professorAnnoyedText = false;
+        professorWarnText = false;
+        professorGetOutText = false;
         panel.SetActive(false);
         score = 0;
         motions = new Dictionary<int, string>();
@@ -117,12 +116,6 @@ public class GameControllManager : MonoBehaviour {
         }
 
         timer -= 0.01f;
-        if(professorTextTimer > 0.00f){
-            Debug.Log("here!\n");
-            professorTextTimer -= 0.01f;
-            if(professorTextTimer < 0.00f)
-                hideProfessorText();
-        }
         if (timer < 0){
             motion = generateMotion();
             motionText.text = "Motion : " + motion;
@@ -211,9 +204,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnWrongMotion()
     {
         return;
-        if (punished){
-            showProfessorText(professorGetOutText);
-        }
+        if (punished)
+            gameOver = true;
         else
             score += msc.OnWrongAnswer(motion);
     }
@@ -221,9 +213,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnSpotted()
     {
         // Spotted twice, game over
-        if (punished){
-            showProfessorText(professorGetOutText);
-        }
+        if (punished)
+            gameOver = true;
         // Change to punish mode
         else
             SetPunish();
@@ -233,27 +224,10 @@ public class GameControllManager : MonoBehaviour {
     {
         Debug.Log("now punished mode\n");
         punished = true;
-        showProfessorText(professorWarnText);
+        professorWarnText.enabled = true;
         angerBarSlider.value = 0.5f;
         // Set color and position
         lightComp.color = Color.red;
         lightGameObject.transform.position = new Vector3(0, 5, 0);
-    }
-
-    public void showProfessorText(Text professorText)
-    {
-        professorText.enabled = true;
-        professorTextTimer = 0.80f;
-    }
-
-    public void hideProfessorText()
-    {
-        Debug.Log("here\n");
-        if(professorGetOutText.enabled){
-            gameOver = true;
-        }
-        professorAnnoyedText.enabled = false;
-        professorWarnText.enabled = false;
-        professorGetOutText.enabled = false;
     }
 }

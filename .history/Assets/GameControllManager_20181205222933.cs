@@ -22,7 +22,7 @@ public class GameControllManager : MonoBehaviour {
     
     public Text motionText;
 
-    public float timeThreshold = 50000;
+    public float timeThreshold = 500;
     public Text scoreText;
     public Text gameOverText;
     public Text finalScoreText;
@@ -243,15 +243,12 @@ public class GameControllManager : MonoBehaviour {
     public void showProfessorText(Text professorText)
     {
         professorText.enabled = true;
-        professorTextTimer = 0.80f;
+        professorTextTimer = 0.50f;
     }
 
     public void hideProfessorText()
     {
         Debug.Log("here\n");
-        if(professorGetOutText.enabled){
-            gameOver = true;
-        }
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;
