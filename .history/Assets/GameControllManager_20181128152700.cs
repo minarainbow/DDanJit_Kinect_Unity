@@ -39,7 +39,7 @@ public class GameControllManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        // speaker.Play();
+        speaker.Play();
         hasTurned = false;
         gameOver = false;
         punished = false;
@@ -174,8 +174,8 @@ public class GameControllManager : MonoBehaviour {
         } else {
             if (speaker.isPlaying){
                 speaker.Pause();
-                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
-                speaker.PlayOneShot(clip);
+                speaker.clip = (AudioClip) Resources.Load("gameOverSound")
+                speaker.Play();
             }
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";

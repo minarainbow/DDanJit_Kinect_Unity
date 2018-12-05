@@ -174,7 +174,7 @@ public class GameControllManager : MonoBehaviour {
         } else {
             if (speaker.isPlaying){
                 speaker.Pause();
-                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
+                AudioClip clip = (AudioClip) Resources.Load("gameOverSound");
                 speaker.PlayOneShot(clip);
             }
             scoreText.text = ":(";

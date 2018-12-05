@@ -14,7 +14,8 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static int motion;
     public static float timer;
-    public AudioSource speaker;
+    AudioSource speaker; 
+    public AudioClip bgm; 
     public GameObject gameOverSound;
     
     public Text motionText;
@@ -39,7 +40,6 @@ public class GameControllManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        // speaker.Play();
         hasTurned = false;
         gameOver = false;
         punished = false;
@@ -83,7 +83,7 @@ public class GameControllManager : MonoBehaviour {
         timer = 20.0f;
 
         speaker = GetComponent<AudioSource>();
-
+        speaker[0].Play();
 	}
 	
 	// Update is called once per frame
@@ -122,7 +122,9 @@ public class GameControllManager : MonoBehaviour {
                         }
                         else if(Input.anyKeyDown){
                             if(punished){
+                                speaker.Pause();
                                 gameOver = true;
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -134,7 +136,9 @@ public class GameControllManager : MonoBehaviour {
                             OnCorrectMotion();
                         else if(Input.anyKeyDown)
                             if(punished){
+                                speaker.Pause();
                                 gameOver = true;
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -144,7 +148,9 @@ public class GameControllManager : MonoBehaviour {
                             OnCorrectMotion();
                         else if(Input.anyKeyDown)
                             if(punished){
+                                speaker.Pause();
                                 gameOver = true;
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score --;
@@ -154,7 +160,9 @@ public class GameControllManager : MonoBehaviour {
                             OnCorrectMotion();
                         else if (Input.anyKeyDown)
                             if (punished){
+                                speaker.Pause();
                                 gameOver = true;
+                                Instantiate(gameOverSound, transform.position, Quaternion.identity);
                             }
                             else
                                 score--;
@@ -172,11 +180,6 @@ public class GameControllManager : MonoBehaviour {
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
         } else {
-            if (speaker.isPlaying){
-                speaker.Pause();
-                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
-                speaker.PlayOneShot(clip);
-            }
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
             gameOverText.enabled = true;

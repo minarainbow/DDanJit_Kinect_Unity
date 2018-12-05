@@ -14,7 +14,9 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static int motion;
     public static float timer;
-    public AudioSource speaker;
+    public AudioSource[] speaker;
+    public AudioSource bgm;
+    public AudioSource gameOverSound;
     public GameObject gameOverSound;
     
     public Text motionText;
@@ -39,7 +41,6 @@ public class GameControllManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        // speaker.Play();
         hasTurned = false;
         gameOver = false;
         punished = false;
@@ -82,8 +83,10 @@ public class GameControllManager : MonoBehaviour {
         motionText.text = "Motion : " + motion;
         timer = 20.0f;
 
-        speaker = GetComponent<AudioSource>();
+        speaker = GetComponents<AudioSource>();
+        speaker[0] = bgm;
 
+        Debug.Log(speaker.Length);
 	}
 	
 	// Update is called once per frame
@@ -172,10 +175,9 @@ public class GameControllManager : MonoBehaviour {
                 lightGameObject.transform.position = new Vector3(0, 5, 0);
             }
         } else {
-            if (speaker.isPlaying){
-                speaker.Pause();
-                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
-                speaker.PlayOneShot(clip);
+            if (speaker[0].isPlaying){
+                speaker[0].Pause();
+                speaker[1].Play();
             }
             scoreText.text = ":(";
             gameOverText.text = ">>> 엫힝 끝남 <<<";
