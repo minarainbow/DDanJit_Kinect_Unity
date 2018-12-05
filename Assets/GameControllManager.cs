@@ -14,24 +14,30 @@ public class GameControllManager : MonoBehaviour {
     public static int score;
     public static string mission;
     public static float timer;
+    public AudioSource speaker;
+    public GameObject gameOverSound;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
+    public Slider angerBarSlider;
 
     public static Player player1;
     public static Player player2;
-
-    public Text motionText;
 
     public float timeThreshold = 50;
 
     // for multiplayer
     public Text score1Text;
     public Text score2Text;
+    public Text motionText;
     public Text motion1Text;
     public Text motion2Text;
 
     public Text gameOverText;
     public Text finalScoreText;
+    public Text professorAnnoyedText;
+    public Text professorWarnText;
+    public Text professorGetOutText;
+    public float professorTextTimer = 0.0f;
     public InputField nameInput;
     public GameObject panel;
     public GameObject lightGameObject;
@@ -53,12 +59,16 @@ public class GameControllManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        // speaker.Play();
         hasTurned = false;
         gameOver = false;
         punished = false;
         gameOverText.enabled = false;
         finalScoreText.enabled = false;
         nameInput.enabled = false;
+        professorAnnoyedText.enabled = false;
+        professorWarnText.enabled = false;
+        professorGetOutText.enabled = false;
         panel.SetActive(false);
         score = 0;
 
@@ -110,6 +120,8 @@ public class GameControllManager : MonoBehaviour {
         motionText.text = "Mission : " + mission;
         timer = 20.0f;
 
+        speaker = GetComponent<AudioSource>();
+
         // For clock actions
         gameTotalThreshold = timeThreshold;
         gameTime = 0.0f;
@@ -124,6 +136,12 @@ public class GameControllManager : MonoBehaviour {
         }
 
         timer -= 0.01f;
+        if(professorTextTimer > 0.00f){
+            Debug.Log("here!\n");
+            professorTextTimer -= 0.01f;
+            if(professorTextTimer < 0.00f)
+                hideProfessorText();
+        }
         if (timer < 0){
             mission = generateMission();
             motionText.text = "Mission : " + mission;
@@ -217,6 +235,11 @@ public class GameControllManager : MonoBehaviour {
 
             missionSlots = msc.GetCurrentMissionSlots();
         } else {
+            if (speaker.isPlaying){
+                speaker.Pause();
+                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
+                speaker.PlayOneShot(clip);
+            }
             score1Text.text = ":(";
             score2Text.text = ":(";
 
@@ -280,12 +303,16 @@ public class GameControllManager : MonoBehaviour {
     {
 
         return;
+        if (punished){
+            showProfessorText(professorGetOutText);
+        }
+        else
+            score += msc.OnWrongAnswer(mission);
     }
 
     public void OnSpotted(int type)
     {
         // Spotted twice, game over
-
         if (type == 1) {
             if (player1.isPunished())
             {
@@ -302,21 +329,43 @@ public class GameControllManager : MonoBehaviour {
                 player2.setPunished();
             }
         }
-        if (player1.isDead() || player2.isDead()) {
+        if (player1.isDead() || player2.isDead())
+        {
             gameOver = true;
         }
         // Change to punish mode
         else
+        {
+            showProfessorText(professorGetOutText);
             SetPunish();
+        }
     }
 
     public void SetPunish()
     {
         Debug.Log("now punished mode\n");
         punished = true;
-
+        showProfessorText(professorWarnText);
+        angerBarSlider.value = 0.5f;
         // Set color and position
         lightComp.color = Color.red;
         lightGameObject.transform.position = new Vector3(0, 5, 0);
+    }
+
+    public void showProfessorText(Text professorText)
+    {
+        professorText.enabled = true;
+        professorTextTimer = 0.80f;
+    }
+
+    public void hideProfessorText()
+    {
+        Debug.Log("here\n");
+        if(professorGetOutText.enabled){
+            gameOver = true;
+        }
+        professorAnnoyedText.enabled = false;
+        professorWarnText.enabled = false;
+        professorGetOutText.enabled = false;
     }
 }
