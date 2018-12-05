@@ -1,16 +1,18 @@
 ﻿<Properties StartupConfiguration="{1AF67C3E-E1AA-A473-F14B-B56BD4E3856E}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Player.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/MissionSlotController.cs">
     <Files>
       <File FileName="Assets/LeaderboardController.cs" Line="43" Column="57" />
-      <File FileName="Assets/GameControllManager.cs" Line="160" Column="18" />
+      <File FileName="Assets/GameControllManager.cs" Line="292" Column="25" />
       <File FileName="Assets/User.cs" Line="1" Column="1" />
       <File FileName="Assets/Classroom/Scripts/CharacterControl.cs" Line="29" Column="1" />
       <File FileName="Assets/GameSceneManager.cs" Line="17" Column="35" />
       <File FileName="Assets/ProfessorController.cs" Line="24" Column="35" />
-      <File FileName="Assets/MissionSlotController.cs" Line="1" Column="1" />
+      <File FileName="Assets/MissionSlotController.cs" Line="84" Column="50" />
       <File FileName="Assets/NewClass.cs" Line="5" Column="5" />
-      <File FileName="Assets/Player.cs" Line="59" Column="10" />
+      <File FileName="Assets/Player.cs" Line="1" Column="1" />
+      <File FileName="Assets/LeaderBoardEntry.cs" Line="1" Column="1" />
+      <File FileName="Assets/MotionGenerator.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

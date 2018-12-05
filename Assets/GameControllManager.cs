@@ -129,19 +129,34 @@ public class GameControllManager : MonoBehaviour {
 
             motionText.text = "Mission : " + mission;
             // professor turned around
-            if(Input.anyKeyDown && hasTurned){
-                OnSpotted();
+
+            string[] player1_key = {
+                    "w", "s", "a", "d"
+                };
+
+            string[] player2_key = {
+                    "up", "down", "left", "right"
+                };
+
+            if (Input.anyKeyDown && hasTurned){
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Input.GetKeyDown(player1_key[i]))
+                    {
+                        OnSpotted(1);
+                    }
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Input.GetKeyDown(player2_key[i]))
+                    {
+                        OnSpotted(2);
+                    }
+                }
             }
 
             else if(Input.anyKeyDown && !hasTurned){
                 // 우선은 이렇게 그지같이 짜 놓고 나중에 바꾸기
-                string[] player1_key = {
-                    "w", "s", "a", "d"
-                };
-
-                string[] player2_key = {
-                    "up", "down", "left", "right"
-                };
 
                 for (int i = 0; i < 4; i++) {
                     if (Input.GetKeyDown(player1_key[i])) {
@@ -251,11 +266,29 @@ public class GameControllManager : MonoBehaviour {
             score += msc.OnWrongAnswer(mission);
     }
 
-    public void OnSpotted()
+    public void OnSpotted(int type)
     {
         // Spotted twice, game over
-        if (punished)
+
+        if (type == 1) {
+            if (player1.isPunished())
+            {
+                player1.setDead();
+            } else 
+            {
+                player1.setPunished();
+            }
+        } else if (type == 2) {
+            if (player2.isPunished())
+            {
+                player2.setDead();
+            } else {
+                player2.setPunished();
+            }
+        }
+        if (player1.isDead() || player2.isDead()) {
             gameOver = true;
+        }
         // Change to punish mode
         else
             SetPunish();

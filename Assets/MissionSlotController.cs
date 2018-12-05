@@ -81,7 +81,7 @@ public class MissionSlotController {
     public void SpawnMissionSlot(string motion)
     {
         // Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
-        MissionSlot ms = new MissionSlot(motion, timeThreshold);
+        MissionSlot ms = new MissionSlot(motion);
 
         MissionSlotList.Add(ms);
         /*
