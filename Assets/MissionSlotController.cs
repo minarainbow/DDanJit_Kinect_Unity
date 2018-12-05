@@ -16,7 +16,12 @@ public class MissionSlot
     float time;
     public bool IsCorrect;
 
+<<<<<<< HEAD
     public MissionSlot(string mKey, float threshold)
+=======
+
+    public MissionSlot(string mKey)
+>>>>>>> 6bc780bee038d56ded1b25aee7c124a8aab88065
     {
         missionKey = mKey;
         score = mKey.Length * (mKey.Length + 1) / 2;
