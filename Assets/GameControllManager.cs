@@ -16,12 +16,20 @@ public class GameControllManager : MonoBehaviour {
     public static float timer;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
+
+    public static Player player1;
+    public static Player player2;
     
     public Text motionText;
 
     public float timeThreshold = 50;
 
-    public Text scoreText;
+    // for multiplayer
+    public Text score1Text;
+    public Text score2Text;
+    public Text motion1Text;
+    public Text motion2Text;
+
     public Text gameOverText;
     public Text finalScoreText;
     public InputField nameInput;
@@ -57,6 +65,9 @@ public class GameControllManager : MonoBehaviour {
         motions.Add(2, "c");
         motions.Add(3, "d");
 
+        player1 = new Player(1);
+        player2 = new Player(2);
+
         //        scoreText = GetComponent <Text> ();
         //        gameOverText = GetComponent <Text> ();
 
@@ -75,11 +86,11 @@ public class GameControllManager : MonoBehaviour {
         // Set initial time
         time = 0.0f;
 
-        Vector3 pos = scoreText.transform.position;
-        pos.x += 0.2f;
-        pos.y -= 0.1f;
-        scoreText.transform.position = pos;
-        scoreText.color = Color.red;
+        //Vector3 pos = score1Text.transform.position;
+        //pos.x += 0.2f;
+        //pos.y -= 0.1f;
+        //score1Text.transform.position = pos;
+        //score1Text.color = Color.red;
         
         // motionText.transform.position = new Vector3(-210, 80, 0);
         Vector3 pos2 = motionText.transform.position;
@@ -120,13 +131,52 @@ public class GameControllManager : MonoBehaviour {
              }
 
             // general mode
-            scoreText.text = "Score: " + score;
+            score1Text.text = "Score: " + player1.getScore();
+            score2Text.text = "Score: " + player2.getScore();
+
             motionText.text = "Motion : " + motion;
             // professor turned around
             if(Input.anyKeyDown && hasTurned){
                 OnSpotted();
             }
+
             else if(Input.anyKeyDown && !hasTurned){
+                // 우선은 이렇게 그지같이 짜 놓고 나중에 바꾸기
+                if (Input.GetKeyDown("w"))
+                {
+                    Debug.Log("ASDF");
+
+                    player1.addMotion(1);
+                }
+                else if (Input.GetKeyDown("s"))
+                {
+                    player1.addMotion(2);
+                }
+                else if (Input.GetKeyDown("a"))
+                {
+                    player1.addMotion(3);
+                }
+                else if (Input.GetKeyDown("d"))
+                {
+                    player1.addMotion(4);
+                }
+                else if (Input.GetKeyDown("up"))
+                {
+                    player2.addMotion(1);
+                }
+                else if (Input.GetKeyDown("down"))
+                {
+                    player2.addMotion(2);
+                }
+                else if (Input.GetKeyDown("left"))
+                {
+                    player2.addMotion(3);
+                }
+                else if (Input.GetKeyDown("right"))
+                {
+                    player2.addMotion(4);
+                }
+
                 if (motions.ContainsKey(motion))
                 {
                     if (Input.GetKeyDown(motions[motion]))
@@ -135,6 +185,8 @@ public class GameControllManager : MonoBehaviour {
                         OnWrongMotion();
                 }
 
+                motion1Text.text = player1.getMotionString();
+                motion2Text.text = player2.getMotionString();
                 motion = generateMotion();
                 motionText.text = "Motion : " + motion;
             }
@@ -144,7 +196,9 @@ public class GameControllManager : MonoBehaviour {
 
             missionSlots = msc.GetCurrentMissionSlots();
         } else {
-            scoreText.text = ":(";
+            score1Text.text = ":(";
+            score2Text.text = ":(";
+
             gameOverText.text = ">>> 엫힝 끝남 <<<";
             gameOverText.enabled = true;
 
