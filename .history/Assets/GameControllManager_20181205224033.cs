@@ -257,7 +257,7 @@ public class GameControllManager : MonoBehaviour {
     public void OnCompletedMotion()
     {
         double multiplier = punished ? 1.5 : 1; //should be removed?
-        score += (int)(msc.OnCorrectAnswer(mission) * multiplier);
+        score += (int)(msc.OnCorrectAnswer(motion) * multiplier);
     }
 
     public void OnCorrectMotion()

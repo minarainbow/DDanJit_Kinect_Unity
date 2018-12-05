@@ -19,16 +19,21 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
+    
+    public Text motionText;
+
+    public float timeThreshold = 50000;
 
     public static Player player1;
     public static Player player2;
+
+    public Text motionText;
 
     public float timeThreshold = 50;
 
     // for multiplayer
     public Text score1Text;
     public Text score2Text;
-    public Text motionText;
     public Text motion1Text;
     public Text motion2Text;
 
@@ -257,6 +262,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnCompletedMotion()
     {
         double multiplier = punished ? 1.5 : 1; //should be removed?
+        score += (int)(msc.OnCorrectAnswer(motion) * multiplier);
+        double multiplier = punished ? 1.5 : 1;
         score += (int)(msc.OnCorrectAnswer(mission) * multiplier);
     }
 

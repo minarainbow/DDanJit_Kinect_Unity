@@ -20,6 +20,8 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
 
+    public float timeThreshold = 50000;
+
     public static Player player1;
     public static Player player2;
 
@@ -257,6 +259,8 @@ public class GameControllManager : MonoBehaviour {
     public void OnCompletedMotion()
     {
         double multiplier = punished ? 1.5 : 1; //should be removed?
+        score += (int)(msc.OnCorrectAnswer(motion) * multiplier);
+        double multiplier = punished ? 1.5 : 1;
         score += (int)(msc.OnCorrectAnswer(mission) * multiplier);
     }
 
