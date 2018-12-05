@@ -15,9 +15,8 @@ public class MissionSlot
     float threshold;
     float time;
     public bool IsCorrect;
-
-
-    public MissionSlot(string mKey)
+    
+    public MissionSlot(string mKey, float threshold)
     {
         missionKey = mKey;
         score = mKey.Length * (mKey.Length + 1) / 2;
@@ -98,7 +97,7 @@ public class MissionSlotController {
     public List<MissionSlot> GetCurrentMissionSlots() {
         List<MissionSlot> currentMissionSlots = new List<MissionSlot>(4);
         int cnt = 0;
-        // TODO: 처음부터 네 개 받아오. removed말고. 
+        // TODO: 처음부터 네 개 받아오. removed말고.
         for (int i = 0; i < MissionSlotList.Count; i++)
         {
             if (!MissionSlotList[i].GetStatus().Equals(
@@ -116,7 +115,7 @@ public class MissionSlotController {
 
         return currentMissionSlots;
     }
-    
+
     /* This function does not actually remove a mission slot,
      * but only sets mission status to 'Removed' */
     int RemoveMissionSlot(string motion, bool IsCorrect)
@@ -127,7 +126,7 @@ public class MissionSlotController {
         ms.IsCorrect = IsCorrect;
         MissionSlotList[index] = ms;
         return ms.score;
-        
+
     }
 
     public int OnCorrectAnswer(string motion)
@@ -139,7 +138,7 @@ public class MissionSlotController {
     {
         return -1;
     }
-    
+
     public void OnTimeout(string motion)
     {
         RemoveMissionSlot(motion, false);
