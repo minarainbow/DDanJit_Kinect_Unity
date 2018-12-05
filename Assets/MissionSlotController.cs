@@ -7,7 +7,7 @@ public class MissionSlot
 {
     public enum SlotStatus { Normal, Blinking, Removed };
 
-    int missionID;
+    string missionKey;
     public int score;
     DateTime TimeCreated;
     int status;
@@ -16,10 +16,14 @@ public class MissionSlot
     float time;
     public bool IsCorrect;
 
+<<<<<<< HEAD
     public MissionSlot(int mID, float threshold)
+=======
+    public MissionSlot(string mKey)
+>>>>>>> multikey
     {
-        missionID = mID;
-        score = 10;
+        missionKey = mKey;
+        score = mKey.Length * (mKey.Length + 1) / 2;
         TimeCreated = DateTime.Now;
         status = (int)SlotStatus.Normal;
         IsCorrect = false;
@@ -47,9 +51,9 @@ public class MissionSlot
         return 0;
     }
 
-    public int GetMissionID()
+    public string GetMissionKey()
     {
-        return missionID;
+        return missionKey;
     }
 
     public int GetStatus()
@@ -77,7 +81,7 @@ public class MissionSlotController {
     }
 
     // Add a mission slot with MissionID motion to list
-    public void SpawnMissionSlot(int motion)
+    public void SpawnMissionSlot(string motion)
     {
         // Instantiate(MissionSlotPrefab, Spawnpoint.position, Spawnpoint.rotation); // Done??
         MissionSlot ms = new MissionSlot(motion, timeThreshold);
@@ -118,9 +122,9 @@ public class MissionSlotController {
     
     /* This function does not actually remove a mission slot,
      * but only sets mission status to 'Removed' */
-    int RemoveMissionSlot(int motion, bool IsCorrect)
+    int RemoveMissionSlot(string motion, bool IsCorrect)
     {
-        int index = MissionSlotList.FindIndex(x => (x.GetMissionID() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
+        int index = MissionSlotList.FindIndex(x => (x.GetMissionKey() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
         MissionSlot ms = MissionSlotList[index];
         ms.UpdateStatus((int)MissionSlot.SlotStatus.Removed);
         ms.IsCorrect = IsCorrect;
@@ -129,17 +133,17 @@ public class MissionSlotController {
         
     }
 
-    public int OnCorrectAnswer(int motion)
+    public int OnCorrectAnswer(string motion)
     {
         return RemoveMissionSlot(motion, true);
     }
 
-    public int OnWrongAnswer(int motion)
+    public int OnWrongAnswer(string motion)
     {
         return -1;
     }
     
-    public void OnTimeout(int motion)
+    public void OnTimeout(string motion)
     {
         RemoveMissionSlot(motion, false);
     }
@@ -156,7 +160,7 @@ public class MissionSlotController {
             // Check for time-out mission
             if (m.IsTimeout())
             {
-                OnTimeout(m.GetMissionID());
+                OnTimeout(m.GetMissionKey());
             }
 
             // TODO: Change visibility features, if any

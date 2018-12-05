@@ -7,19 +7,19 @@ using Firebase.Database;
 using Firebase.Unity.Editor;
 
 public class GameControllManager : MonoBehaviour {
-    
+
     public static bool gameOver;
     public static bool punished;
     public static bool hasTurned;
     public static int score;
-    public static int motion;
+    public static string mission;
     public static float timer;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
 
     public static Player player1;
     public static Player player2;
-    
+
     public Text motionText;
 
     public float timeThreshold = 50;
@@ -42,7 +42,6 @@ public class GameControllManager : MonoBehaviour {
     Color color1 = Color.blue;
     float duration = 1.0f;
     float time;
-    Dictionary<int, string> motions;
 
     DatabaseReference mDatabaseRef;
 
@@ -59,11 +58,6 @@ public class GameControllManager : MonoBehaviour {
         nameInput.enabled = false;
         panel.SetActive(false);
         score = 0;
-        motions = new Dictionary<int, string>();
-        motions.Add(0, "a");
-        motions.Add(1, "b");
-        motions.Add(2, "c");
-        motions.Add(3, "d");
 
         player1 = new Player(1);
         player2 = new Player(2);
@@ -73,7 +67,7 @@ public class GameControllManager : MonoBehaviour {
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
-        
+
         // Getting root reference from firebase.
         mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 
@@ -91,7 +85,7 @@ public class GameControllManager : MonoBehaviour {
         //pos.y -= 0.1f;
         //score1Text.transform.position = pos;
         //score1Text.color = Color.red;
-        
+
         // motionText.transform.position = new Vector3(-210, 80, 0);
         Vector3 pos2 = motionText.transform.position;
         pos2.x += 0.2f;
@@ -99,16 +93,15 @@ public class GameControllManager : MonoBehaviour {
         motionText.transform.position = pos2;
         motionText.color = Color.blue;
 
-        mg = GetComponent<MotionGenerator>();
-        motion = generateMotion();
-        motionText.text = "Motion : " + motion;
+        mission = generateMission();
+        motionText.text = "Mission : " + mission;
         timer = 20.0f;
 
         // For clock actions
         gameTotalThreshold = timeThreshold;
         gameTime = 0.0f;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
         // For debugging
@@ -119,8 +112,8 @@ public class GameControllManager : MonoBehaviour {
 
         timer -= 0.01f;
         if (timer < 0){
-            motion = generateMotion();
-            motionText.text = "Motion : " + motion;
+            mission = generateMission();
+            motionText.text = "Mission : " + mission;
         }
 
         if (!gameOver) {
@@ -134,7 +127,7 @@ public class GameControllManager : MonoBehaviour {
             score1Text.text = "Score: " + player1.getScore();
             score2Text.text = "Score: " + player2.getScore();
 
-            motionText.text = "Motion : " + motion;
+            motionText.text = "Mission : " + mission;
             // professor turned around
             if(Input.anyKeyDown && hasTurned){
                 OnSpotted();
@@ -163,21 +156,30 @@ public class GameControllManager : MonoBehaviour {
                         player2.addMotion(i + 1);
                     }
                 }
-                if (motions.ContainsKey(motion))
+
+
+                // TODO: Change 'motion' to per-player.
+                string motion = null;
+
+                /* Detect key, find corresponding player, and append to 'motion'. */
+                if (mission.Equals(motion))
                 {
-                    if (Input.GetKeyDown(motions[motion]))
-                        OnCorrectMotion();
-                    else if (Input.anyKeyDown)
-                        OnWrongMotion();
+                    OnCompletedMotion();
+                }
+                else if (mission.StartsWith(motion))
+                {
+                    OnCorrectMotion();
+                }
+                else
+                {
+                    // TODO: Change it to per-player. Handle restart in below function.
+                    OnWrongMotion();
                 }
 
                 motion1Text.text = player1.getMotionString();
                 motion2Text.text = player2.getMotionString();
-                motion = generateMotion();
-                motionText.text = "Motion : " + motion;
-            }
-            if (score < 0) {
-                score = 0;
+                mission = generateMission();
+                motionText.text = "Mission : " + mission;
             }
 
             missionSlots = msc.GetCurrentMissionSlots();
@@ -200,7 +202,7 @@ public class GameControllManager : MonoBehaviour {
     private void writeNewUser(string userId, string name, int score) {
         User user = new User(name, score);
         string json = JsonUtility.ToJson(user);
-        
+
         mDatabaseRef.Child("users").Child(userId).SetRawJsonValueAsync(json);
     }
 
@@ -215,17 +217,29 @@ public class GameControllManager : MonoBehaviour {
         writeNewUser(newId, userName, score);
     }
 
-    public int generateMotion(){
-        int motion;
-        motion = Random.Range(0,4);
+    /* Function that generates new motion.
+     * Motion length is 4~8
+     * Keys: 0 - up, 1 - left, 2 - down, 3 - right */
+    public string generateMission(){
+        string motion = null;
+        int motionLength = Random.Range(4, 8);
+        for (int i = 0; i < motionLength; i++)
+        {
+            motion = motion + Random.Range(0, 4).ToString();
+        }
         msc.SpawnMissionSlot(motion);
         return motion;
     }
 
-    public void OnCorrectMotion()
+    public void OnCompletedMotion()
     {
         double multiplier = punished ? 1.5 : 1;
-        score += (int)(msc.OnCorrectAnswer(motion) * multiplier);
+        score += (int)(msc.OnCorrectAnswer(mission) * multiplier);
+    }
+
+    public void OnCorrectMotion()
+    {
+        // TODO: Update player progress.
     }
 
     public void OnWrongMotion()
@@ -234,7 +248,7 @@ public class GameControllManager : MonoBehaviour {
         if (punished)
             gameOver = true;
         else
-            score += msc.OnWrongAnswer(motion);
+            score += msc.OnWrongAnswer(mission);
     }
 
     public void OnSpotted()
