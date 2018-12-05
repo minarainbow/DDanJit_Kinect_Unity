@@ -7,14 +7,14 @@ public class MissionSlot
 {
     public enum SlotStatus { Normal, Blinking, Removed };
 
-    int missionID; // TODO: need to match with mission data type
-    int score;
+    int missionID;
+    public int score;
     DateTime TimeCreated;
     int status;
 
     float threshold;
     float time;
-    bool IsCorrect;
+    public bool IsCorrect;
 
     public MissionSlot(int mID, float threshold)
     {
@@ -63,7 +63,7 @@ public class MissionSlot
     }
 }
 
-public class MissionSlotController : MonoBehaviour {
+public class MissionSlotController {
 
     public Transform Spawnpoint;
     public GameObject MissionSlotPrefab;
@@ -83,12 +83,14 @@ public class MissionSlotController : MonoBehaviour {
         MissionSlot ms = new MissionSlot(motion, timeThreshold);
 
         MissionSlotList.Add(ms);
+        /*
         for (int i = 0; i < MissionSlotList.Count; i++)
         {
             MissionSlot m = MissionSlotList[i];
             Debug.Log(string.Format("Mission {0}: {1} {2}", i, m.GetMissionID(), (MissionSlot.SlotStatus)m.GetStatus()));
         }
         Debug.Log("\n");
+        */
     }
 
     // Get four opened slot
@@ -116,13 +118,30 @@ public class MissionSlotController : MonoBehaviour {
     
     /* This function does not actually remove a mission slot,
      * but only sets mission status to 'Removed' */
-    public void RemoveMissionSlot(int motion)
+    int RemoveMissionSlot(int motion, bool IsCorrect)
     {
         int index = MissionSlotList.FindIndex(x => (x.GetMissionID() == motion && x.GetStatus() != (int)MissionSlot.SlotStatus.Removed));
         MissionSlot ms = MissionSlotList[index];
         ms.UpdateStatus((int)MissionSlot.SlotStatus.Removed);
+        ms.IsCorrect = IsCorrect;
         MissionSlotList[index] = ms;
+        return ms.score;
         
+    }
+
+    public int OnCorrectAnswer(int motion)
+    {
+        return RemoveMissionSlot(motion, true);
+    }
+
+    public int OnWrongAnswer(int motion)
+    {
+        return -1;
+    }
+    
+    public void OnTimeout(int motion)
+    {
+        RemoveMissionSlot(motion, false);
     }
 
     /* Check for any time-out missions, and remove them
@@ -137,10 +156,10 @@ public class MissionSlotController : MonoBehaviour {
             // Check for time-out mission
             if (m.IsTimeout())
             {
-                RemoveMissionSlot(m.GetMissionID());
+                OnTimeout(m.GetMissionID());
             }
 
-            // Change visibility features, if any
+            // TODO: Change visibility features, if any
         }
     }
 
