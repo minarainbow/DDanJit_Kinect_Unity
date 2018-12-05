@@ -9,7 +9,7 @@ public class Player {
     int score;
     int claps;
 
-    int[] motions; // 1 = up 2 = down 3 = left 4 = right
+    string motions; // 1 = up 2 = down 3 = left 4 = right
     int motion_count;
 
     int type;
@@ -22,43 +22,15 @@ public class Player {
 
         this.type = type;
         this.motion_count = 0;
-        this.motions = new int[10];
+        this.motions = null;
     }
 
-    public void addMotion(int motion) {
-        if (motion_count == 10)
-        {
-            motion_count = 0;
-        }
-        motions[motion_count] = motion;
-        motion_count += 1;
+    public void addMotion(string motion) {
+        motions += motion;
     }
 
-    public int[] getMotion() {
+    public string getMotion() {
         return motions;
-    }
-
-    public string getMotionString() {
-        string ret_str = "";
-        for (int i = 0; i < motion_count; i++) {
-            switch (motions[i])
-            {
-                case 1:
-                    ret_str += "[U]";
-                    break;
-                case 2:
-                    ret_str += "[D]";
-                    break;
-                case 3:
-                    ret_str += "[L]";
-                    break;
-                case 4:
-                    ret_str += "[R]";
-                    break;
-            }
-        }
-
-        return ret_str;
     }
 
     public bool isRightTotal(int[] answer) {

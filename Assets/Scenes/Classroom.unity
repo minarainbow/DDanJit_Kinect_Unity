@@ -6038,7 +6038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motionText: {fileID: 99084108}
-  timeThreshold: 10
+  timeThreshold: 20
   score1Text: {fileID: 1236042398}
   score2Text: {fileID: 588829168}
   motion1Text: {fileID: 687755136}
