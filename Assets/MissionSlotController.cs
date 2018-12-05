@@ -16,11 +16,8 @@ public class MissionSlot
     float time;
     public bool IsCorrect;
 
-<<<<<<< HEAD
-    public MissionSlot(int mID, float threshold)
-=======
+
     public MissionSlot(string mKey)
->>>>>>> multikey
     {
         missionKey = mKey;
         score = mKey.Length * (mKey.Length + 1) / 2;
