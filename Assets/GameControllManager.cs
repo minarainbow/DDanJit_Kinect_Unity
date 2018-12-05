@@ -142,41 +142,27 @@ public class GameControllManager : MonoBehaviour {
 
             else if(Input.anyKeyDown && !hasTurned){
                 // 우선은 이렇게 그지같이 짜 놓고 나중에 바꾸기
-                if (Input.GetKeyDown("w"))
-                {
-                    Debug.Log("ASDF");
+                string[] player1_key = {
+                    "w", "s", "a", "d"
+                };
 
-                    player1.addMotion(1);
-                }
-                else if (Input.GetKeyDown("s"))
-                {
-                    player1.addMotion(2);
-                }
-                else if (Input.GetKeyDown("a"))
-                {
-                    player1.addMotion(3);
-                }
-                else if (Input.GetKeyDown("d"))
-                {
-                    player1.addMotion(4);
-                }
-                else if (Input.GetKeyDown("up"))
-                {
-                    player2.addMotion(1);
-                }
-                else if (Input.GetKeyDown("down"))
-                {
-                    player2.addMotion(2);
-                }
-                else if (Input.GetKeyDown("left"))
-                {
-                    player2.addMotion(3);
-                }
-                else if (Input.GetKeyDown("right"))
-                {
-                    player2.addMotion(4);
+                string[] player2_key = {
+                    "up", "down", "left", "right"
+                };
+
+                for (int i = 0; i < 4; i++) {
+                    if (Input.GetKeyDown(player1_key[i])) {
+                        player1.addMotion(i + 1);
+                    }
                 }
 
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Input.GetKeyDown(player2_key[i]))
+                    {
+                        player2.addMotion(i + 1);
+                    }
+                }
                 if (motions.ContainsKey(motion))
                 {
                     if (Input.GetKeyDown(motions[motion]))

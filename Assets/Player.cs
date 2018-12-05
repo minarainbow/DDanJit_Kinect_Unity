@@ -57,23 +57,22 @@ public class Player {
                     break;
             }
         }
-        //switch (motions[motion_count])
-        //{
-        //    case 1:
-        //        ret_str += "[U]";
-        //        break;
-        //    case 2:
-        //        ret_str += "[D]";
-        //        break;
-        //    case 3:
-        //        ret_str += "[L]";
-        //        break;
-        //    case 4:
-        //        ret_str += "[R]";
-        //        break;
-        //}
 
         return ret_str;
+    }
+
+    public bool isRightTotal(int[] answer) {
+        return isRight(answer);
+    }
+
+    public bool isRight(int[] answer) {
+        for (int i = 0; i < motion_count; i++) {
+            if (motions[i] != answer[i]) {
+                motion_count = 0;
+                return false;
+            }
+        }
+        return true;
     }
 
     public bool isPunished() {
