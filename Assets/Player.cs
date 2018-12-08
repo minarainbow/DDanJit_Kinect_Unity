@@ -13,6 +13,7 @@ public class Player {
     int motion_count;
 
     int type;
+    public Dictionary<string, string> keyMap;
 
     public Player(int type) {
         this.dead = false;
@@ -23,6 +24,17 @@ public class Player {
         this.type = type;
         this.motion_count = 0;
         this.motions = null;
+        this.keyMap = new Dictionary<string, string>();
+    }
+
+    public void addKeyMap(string[] keys)
+    {
+        int n = 1;
+        foreach (var key in keys)
+        {
+            keyMap.Add(key, n.ToString());
+            n++;
+        }
     }
 
     public void addMotion(string motion) {
@@ -31,6 +43,11 @@ public class Player {
 
     public string getMotion() {
         return motions;
+    }
+
+    public void clearMotion()
+    {
+        motions = null;
     }
 
     public bool isRightTotal(int[] answer) {

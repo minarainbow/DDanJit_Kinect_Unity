@@ -6,15 +6,19 @@ public class ProfessorController : MonoBehaviour {
 
     public float randLeftRange = 3.0f;
     public float randRightRange = 10.0f;
+
+    public static bool isTurned;
     
     float time;
     float threshold = 1.0f;
     float randThreshold = 3.0f;
     
-    int toggleRot = 0;
+    bool toggleRot;
     
 	// Use this for initialization
 	void Start () {
+        isTurned = false;
+        toggleRot = false;
         time = 0.0f;
 	}
 	
@@ -22,7 +26,7 @@ public class ProfessorController : MonoBehaviour {
 	void Update () {
         if (!GameControllManager.gameOver) {
             time += Time.deltaTime;
-            if (toggleRot == 0) {
+            if (!toggleRot) {
                 if (time >= randThreshold) {
                     time = 0.0f;
                     transform.rotation = Quaternion.Euler(0, 0, 0); // 똑바로 봐라.
@@ -31,10 +35,10 @@ public class ProfessorController : MonoBehaviour {
                     randThreshold = Random.Range(randLeftRange, randRightRange);
                     
                     // TODO: set variables to turn around again.
-                    toggleRot = 1;
+                    toggleRot = true;
                     
                     // TODO: set GameControllManager variable.
-                    GameControllManager.hasTurned = true;
+                    isTurned = true;
                 }
             } else {
                 // TODO: turn around again.
@@ -42,10 +46,10 @@ public class ProfessorController : MonoBehaviour {
                     time = 0.0f;
                     transform.rotation = Quaternion.Euler(0, 180, 0);
                     
-                    toggleRot = 0;
+                    toggleRot = false;
                     
                     // TODO: set GameControllManager variable.
-                    GameControllManager.hasTurned = false;
+                    isTurned = false;
                 }
             }
         }

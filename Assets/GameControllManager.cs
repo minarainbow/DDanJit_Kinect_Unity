@@ -9,8 +9,7 @@ using Firebase.Unity.Editor;
 public class GameControllManager : MonoBehaviour {
 
     public static bool gameOver;
-    public static bool punished;
-    public static bool hasTurned;
+    public static bool isPunishedMode;
     public static int score;
     public static string mission;
     public static float timer;
@@ -20,8 +19,7 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
 
-    public static Player player1;
-    public static Player player2;
+    public static Player[] players;
 
     public float timeThreshold = 50;
 
@@ -49,20 +47,18 @@ public class GameControllManager : MonoBehaviour {
     float duration = 1.0f;
     float time;
 
+    int playerNum = 2;
+
     DatabaseReference mDatabaseRef;
 
     List<MissionSlot> missionSlots = new List<MissionSlot>(4);
     MissionSlotController msc = new MissionSlotController(2);
 
-    Dictionary<string, string> player1KeyMap;
-    Dictionary<string, string> player2KeyMap;
-
     // Use this for initialization
     void Start () {
         // speaker.Play();
-        hasTurned = false;
         gameOver = false;
-        punished = false;
+        isPunishedMode = false;
         gameOverText.enabled = false;
         finalScoreText.enabled = false;
         nameInput.enabled = false;
@@ -70,20 +66,19 @@ public class GameControllManager : MonoBehaviour {
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;
         panel.SetActive(false);
-        score = 0;
 
-        player1 = new Player(1);
-        player2 = new Player(2);
-        player1KeyMap = new Dictionary<string, string>();
-        player1KeyMap.Add("w", "1");
-        player1KeyMap.Add("a", "2");
-        player1KeyMap.Add("s", "3");
-        player1KeyMap.Add("d", "4");
-        player2KeyMap = new Dictionary<string, string>();
-        player2KeyMap.Add("up", "1");
-        player2KeyMap.Add("left", "2");
-        player2KeyMap.Add("down", "3");
-        player2KeyMap.Add("right", "4");
+        players = new Player[playerNum + 1];
+
+        for (var i = 1; i <= playerNum; i++)
+        {
+            players[i] = new Player(i);
+        }
+
+        string[] player1Keys = new string[] { "w", "a", "s", "d" };
+        string[] player2Keys = new string[] { "up", "left", "down", "right" };
+        players[1].addKeyMap(player1Keys);
+        players[2].addKeyMap(player2Keys);
+
 
         //        scoreText = GetComponent <Text> ();
         //        gameOverText = GetComponent <Text> ();
@@ -137,7 +132,7 @@ public class GameControllManager : MonoBehaviour {
 
         timer -= 0.01f;
         if(professorTextTimer > 0.00f){
-            Debug.Log("here!\n");
+            // Debug.Log("here!\n");
             professorTextTimer -= 0.01f;
             if(professorTextTimer < 0.00f)
                 hideProfessorText();
@@ -151,95 +146,69 @@ public class GameControllManager : MonoBehaviour {
             time += Time.deltaTime;
             gameTime += Time.deltaTime;
             if (gameTime > timeThreshold) {
-                 gameOver = true;
-             }
+                gameOver = true;
+            }
 
             // general mode
-            score1Text.text = "Score: " + player1.getScore();
-            score2Text.text = "Score: " + player2.getScore();
+            score1Text.text = "Score: " + players[1].getScore();
+            score2Text.text = "Score: " + players[2].getScore();
 
             motionText.text = "Mission : " + mission;
             // professor turned around
 
-            string[] player1_key = {
-                    "w", "s", "a", "d"
-                };
-
-            string[] player2_key = {
-                    "up", "down", "left", "right"
-                };
-
-            if (Input.anyKeyDown && hasTurned){
-                for (int i = 0; i < 4; i++)
+            if (Input.anyKeyDown)
+            {
+                // Compare key input to players' keymap.
+                int playerID;
+                for (playerID = 1; playerID <= playerNum; playerID++)
                 {
-                    if (Input.GetKeyDown(player1_key[i]))
+                    bool keyFound = false;
+                    foreach (string key in players[playerID].keyMap.Keys)
                     {
-                        OnSpotted(1);
+                        if (Input.GetKeyDown(key))
+                        {
+                            // Add pressed key to corresponding player's motion list.
+                            players[playerID].addMotion(players[playerID].keyMap[key]);
+                            keyFound = true;
+                            break;
+                        }
                     }
-                }
-                for (int i = 0; i < 4; i++)
-                {
-                    if (Input.GetKeyDown(player2_key[i]))
-                    {
-                        OnSpotted(2);
-                    }
-                }
-            }
-
-            else if(Input.anyKeyDown && !hasTurned){
-                bool isPlayer1, isPlayer2;
-                isPlayer1 = isPlayer2 = false;
-                foreach (string key in player1KeyMap.Keys)
-                {
-                    if(Input.GetKeyDown(key))
-                    {
-                        player1.addMotion(player1KeyMap[key]);
-                        isPlayer1 = true;
-                    }
-                }
-                foreach (string key in player2KeyMap.Keys)
-                {
-                    if (Input.GetKeyDown(key))
-                    {
-                        player2.addMotion(player2KeyMap[key]);
-                        isPlayer2 = true;
-                    }
+                    if (keyFound)
+                        break;
                 }
 
-                Debug.Assert(isPlayer1 == false || isPlayer2 == false);
-
-                if (isPlayer1 || isPlayer2)
+                // key input is matched to a player.
+                if (playerID <= playerNum)
                 {
-                    string motion = isPlayer1 ? player1.getMotion() : player2.getMotion();
-                    /* Detect key, find corresponding player, and append to 'motion'. */
-                    if (mission.Equals(motion))
-                    {
-                        OnCompletedMotion(isPlayer1);
-                    }
-                    else if (mission.StartsWith(motion))
-                    {
-                        OnCorrectMotion(isPlayer1);
-                    }
+                    // Spotted by professor. Change game mode.
+                    if (ProfessorController.isTurned)
+                        OnSpotted(playerID);
                     else
                     {
-                        // TODO: Change it to per-player. Handle restart in below function.
-                        OnWrongMotion(isPlayer1);
-                    }
+                        string motion = players[playerID].getMotion();
+                        if (mission.Equals(motion))
+                            OnCompletedMotion(playerID);
+                        else if (mission.StartsWith(motion))
+                            OnCorrectMotion(playerID);
+                        else
+                            OnWrongMotion(playerID);
 
-                    motion1Text.text = player1.getMotion();
-                    motion2Text.text = player2.getMotion();
-                    mission = generateMission();
-                    motionText.text = "Mission : " + mission;
+                        motion1Text.text = players[1].getMotion();
+                        motion2Text.text = players[2].getMotion();
+                    }
                 }
             }
 
             missionSlots = msc.GetCurrentMissionSlots();
-        } else {
+        }
+        else {
             if (speaker.isPlaying){
                 speaker.Pause();
                 AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
                 speaker.PlayOneShot(clip);
             }
+            
+            
             score1Text.text = ":(";
             score2Text.text = ":(";
 
@@ -250,8 +219,7 @@ public class GameControllManager : MonoBehaviour {
             panel.SetActive(true);
             finalScoreText.enabled = true;
             nameInput.enabled = true;
-
-            finalScoreText.text = score.ToString();
+            finalScoreText.text = players[1].getScore().ToString();
         }
 	}
 
@@ -265,10 +233,6 @@ public class GameControllManager : MonoBehaviour {
     public void InputCallBack() {
         string userName = nameInput.text;
         string newId = mDatabaseRef.Child("users").Push().Key;
-
-        if (score < 0) {
-            score = 0;
-        }
 
         writeNewUser(newId, userName, score);
     }
@@ -287,64 +251,54 @@ public class GameControllManager : MonoBehaviour {
         return motion;
     }
 
-    public void OnCompletedMotion(bool isPlayer1)
+    public void OnCompletedMotion(int playerID)
     {
-        double multiplier = punished ? 1.5 : 1;
-        if (isPlayer1)
-            player1.addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
+        Debug.Log("Player " + playerID.ToString() + " completed mission.");
+        double multiplier = players[playerID].isPunished() ? 1.5 : 1;
+        players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
+        mission = generateMission();
+        motionText.text = "Mission : " + mission;
+        for (var i = 1; i <= playerNum; i++)
+        {
+            players[i].clearMotion();
+        }
     }
 
-    public void OnCorrectMotion(bool isPlayer1)
+    public void OnCorrectMotion(int playerID)
     {
+        Debug.Log("Player " + playerID.ToString() + " correct motion.");
         // TODO: Update player progress.
     }
 
-    public void OnWrongMotion(bool isPlayer1)
+    public void OnWrongMotion(int playerID)
     {
-
-        return;
-        if (punished){
-            showProfessorText(professorGetOutText);
-        }
-        else
-            score += msc.OnWrongAnswer(mission);
+        Debug.Log("Player " + playerID.ToString() + " wrong motion.");
+        // TODO: Handle mission restart.
+        players[playerID].clearMotion();
     }
 
-    public void OnSpotted(int type)
+    public void OnSpotted(int playerID)
     {
-        // Spotted twice, game over
-        if (type == 1) {
-            if (player1.isPunished())
-            {
-                player1.setDead();
-            } else 
-            {
-                player1.setPunished();
-            }
-        } else if (type == 2) {
-            if (player2.isPunished())
-            {
-                player2.setDead();
-            } else {
-                player2.setPunished();
-            }
-        }
-        if (player1.isDead() || player2.isDead())
+        // Spotted twice. Game over.
+        if (players[playerID].isPunished())
         {
+            players[playerID].setDead();
+            showProfessorText(professorGetOutText);
             gameOver = true;
         }
-        // Change to punish mode
         else
         {
-            showProfessorText(professorGetOutText);
-            SetPunish();
+            players[playerID].setPunished();
+            showProfessorText(professorWarnText);
+            if (!isPunishedMode)
+                SetPunishMode();
         }
     }
-
-    public void SetPunish()
+    
+    public void SetPunishMode()
     {
         Debug.Log("now punished mode\n");
-        punished = true;
+        isPunishedMode = true;
         showProfessorText(professorWarnText);
         angerBarSlider.value = 0.5f;
         // Set color and position
@@ -360,7 +314,7 @@ public class GameControllManager : MonoBehaviour {
 
     public void hideProfessorText()
     {
-        Debug.Log("here\n");
+        // Debug.Log("here\n");
         if(professorGetOutText.enabled){
             gameOver = true;
         }
