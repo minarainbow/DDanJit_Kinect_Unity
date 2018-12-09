@@ -19,7 +19,6 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
 
-    public static Player[] players;
 
     public float timeThreshold = 50;
 
@@ -29,6 +28,12 @@ public class GameControllManager : MonoBehaviour {
     public Text motionText;
     public Text motion1Text;
     public Text motion2Text;
+
+    int playerNum = 2;
+    public static Player[] players;
+
+    int missionMinLength = 4;
+    int missionMaxLength = 8;
 
     public Text gameOverText;
     public Text finalScoreText;
@@ -40,14 +45,12 @@ public class GameControllManager : MonoBehaviour {
     public GameObject panel;
     public GameObject lightGameObject;
     public Light lightComp;
-    public MotionGenerator mg;
 
     Color color0 = Color.red;
     Color color1 = Color.blue;
     float duration = 1.0f;
     float time;
 
-    int playerNum = 2;
 
     DatabaseReference mDatabaseRef;
 
@@ -67,21 +70,18 @@ public class GameControllManager : MonoBehaviour {
         professorGetOutText.enabled = false;
         panel.SetActive(false);
 
+        // Initialize players.
         players = new Player[playerNum + 1];
-
         for (var i = 1; i <= playerNum; i++)
         {
             players[i] = new Player(i);
         }
 
-        string[] player1Keys = new string[] { "w", "a", "s", "d" };
-        string[] player2Keys = new string[] { "up", "left", "down", "right" };
+        // Attach keymap to each player.
+        string[] player1Keys = { "w", "a", "s", "d" };
+        string[] player2Keys = { "up", "left", "down", "right" };
         players[1].addKeyMap(player1Keys);
         players[2].addKeyMap(player2Keys);
-
-
-        //        scoreText = GetComponent <Text> ();
-        //        gameOverText = GetComponent <Text> ();
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
@@ -126,13 +126,10 @@ public class GameControllManager : MonoBehaviour {
 	void Update () {
         // For debugging
         if (Input.GetKeyDown("q"))
-        {
             gameOver = true;
-        }
 
         timer -= 0.01f;
         if(professorTextTimer > 0.00f){
-            // Debug.Log("here!\n");
             professorTextTimer -= 0.01f;
             if(professorTextTimer < 0.00f)
                 hideProfessorText();
@@ -142,12 +139,34 @@ public class GameControllManager : MonoBehaviour {
             motionText.text = "Mission : " + mission;
         }
 
-        if (!gameOver) {
+        if (gameOver)
+        {
+            if (speaker.isPlaying)
+            {
+                speaker.Pause();
+                AudioClip clip = (AudioClip)Resources.Load("gameOverSound", typeof(AudioClip));
+                speaker.PlayOneShot(clip);
+            }
+
+
+            score1Text.text = ":(";
+            score2Text.text = ":(";
+
+            gameOverText.text = ">>> 엫힝 끝남 <<<";
+            gameOverText.enabled = true;
+
+            // TODO: get new user
+            panel.SetActive(true);
+            finalScoreText.enabled = true;
+            nameInput.enabled = true;
+            finalScoreText.text = players[1].getScore().ToString();
+        }
+        else
+        {
             time += Time.deltaTime;
             gameTime += Time.deltaTime;
-            if (gameTime > timeThreshold) {
+            if (gameTime > timeThreshold)
                 gameOver = true;
-            }
 
             // general mode
             score1Text.text = "Score: " + players[1].getScore();
@@ -173,6 +192,7 @@ public class GameControllManager : MonoBehaviour {
                             break;
                         }
                     }
+                    // key is in playerID's keymap.
                     if (keyFound)
                         break;
                 }
@@ -201,26 +221,6 @@ public class GameControllManager : MonoBehaviour {
 
             missionSlots = msc.GetCurrentMissionSlots();
         }
-        else {
-            if (speaker.isPlaying){
-                speaker.Pause();
-                AudioClip clip = (AudioClip) Resources.Load("gameOverSound", typeof(AudioClip));
-                speaker.PlayOneShot(clip);
-            }
-            
-            
-            score1Text.text = ":(";
-            score2Text.text = ":(";
-
-            gameOverText.text = ">>> 엫힝 끝남 <<<";
-            gameOverText.enabled = true;
-
-            // TODO: get new user
-            panel.SetActive(true);
-            finalScoreText.enabled = true;
-            nameInput.enabled = true;
-            finalScoreText.text = players[1].getScore().ToString();
-        }
 	}
 
     private void writeNewUser(string userId, string name, int score) {
@@ -237,16 +237,16 @@ public class GameControllManager : MonoBehaviour {
         writeNewUser(newId, userName, score);
     }
 
-    /* Function that generates new motion.
-     * Motion length is 4~8
+    /* Generates new mission.
+     * Motion length is randomly chosen in range 4~8.
      * Keys: 1 - up, 2 - left, 3 - down, 4 - right */
-    public string generateMission(){
+    public string generateMission()
+    {
         string motion = null;
-        int motionLength = Random.Range(4, 9);
+        int motionLength = Random.Range(missionMinLength, missionMaxLength + 1);
         for (int i = 0; i < motionLength; i++)
-        {
-            motion = motion + Random.Range(1, 5).ToString();
-        }
+            motion += Random.Range(1, 5).ToString();
+
         msc.SpawnMissionSlot(motion);
         return motion;
     }
@@ -258,22 +258,21 @@ public class GameControllManager : MonoBehaviour {
         players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
         mission = generateMission();
         motionText.text = "Mission : " + mission;
+
         for (var i = 1; i <= playerNum; i++)
-        {
             players[i].clearMotion();
-        }
     }
 
     public void OnCorrectMotion(int playerID)
     {
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
-        // TODO: Update player progress.
     }
 
     public void OnWrongMotion(int playerID)
     {
         Debug.Log("Player " + playerID.ToString() + " wrong motion.");
-        // TODO: Handle mission restart.
+
+        // Clear player's motion.
         players[playerID].clearMotion();
     }
 
@@ -314,10 +313,9 @@ public class GameControllManager : MonoBehaviour {
 
     public void hideProfessorText()
     {
-        // Debug.Log("here\n");
-        if(professorGetOutText.enabled){
+        if(professorGetOutText.enabled)
             gameOver = true;
-        }
+
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;

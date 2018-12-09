@@ -12,6 +12,7 @@ public class ProfessorController : MonoBehaviour {
     float time;
     float threshold = 1.0f;
     float randThreshold = 3.0f;
+    public static int stressGauge; // Indicator of profess turning probability.
     
     bool toggleRot;
     
@@ -19,6 +20,7 @@ public class ProfessorController : MonoBehaviour {
 	void Start () {
         isTurned = false;
         toggleRot = false;
+        stressGauge = 0;
         time = 0.0f;
 	}
 	
