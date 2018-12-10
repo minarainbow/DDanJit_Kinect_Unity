@@ -10,7 +10,6 @@ public class GameControllManager : MonoBehaviour {
 
     public static bool gameOver;
     public static bool isPunishedMode;
-    public static int score;
     public static string mission;
     public static float timer;
     public AudioSource speaker;
@@ -36,13 +35,16 @@ public class GameControllManager : MonoBehaviour {
     int missionMaxLength = 8;
 
     public Text gameOverText;
-    public Text finalScoreText;
     public Text professorAnnoyedText;
     public Text professorWarnText;
     public Text professorGetOutText;
     public float professorTextTimer = 0.0f;
-    public InputField nameInput;
+    
     public GameObject panel;
+    public Text finalScore1Text;
+    public Text finalScore2Text;
+    public InputField nameInput1;
+    public InputField nameInput2;
     public GameObject lightGameObject;
     public Light lightComp;
 
@@ -63,8 +65,10 @@ public class GameControllManager : MonoBehaviour {
         gameOver = false;
         isPunishedMode = false;
         gameOverText.enabled = false;
-        finalScoreText.enabled = false;
-        nameInput.enabled = false;
+        finalScore1Text.enabled = false;
+        nameInput1.enabled = false;
+        finalScore2Text.enabled = false;
+        nameInput2.enabled = false;
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;
@@ -105,10 +109,10 @@ public class GameControllManager : MonoBehaviour {
         //score1Text.color = Color.red;
 
         // motionText.transform.position = new Vector3(-210, 80, 0);
-        Vector3 pos2 = motionText.transform.position;
-        pos2.x += 0.2f;
-        pos2.y -= 0.15f;
-        motionText.transform.position = pos2;
+        // Vector3 pos2 = motionText.transform.position;
+        // pos2.x += 0.2f;
+        // pos2.y -= 0.15f;
+        // motionText.transform.position = pos2;
         motionText.color = Color.blue;
 
         mission = generateMission();
@@ -157,9 +161,12 @@ public class GameControllManager : MonoBehaviour {
 
             // TODO: get new user
             panel.SetActive(true);
-            finalScoreText.enabled = true;
-            nameInput.enabled = true;
-            finalScoreText.text = players[1].getScore().ToString();
+            finalScore1Text.enabled = true;
+            finalScore2Text.enabled = true;
+            finalScore1Text.text = players[1].getScore().ToString();
+            finalScore2Text.text = players[2].getScore().ToString();
+            nameInput1.enabled = true;
+            nameInput2.enabled = true;
         }
         else
         {
@@ -231,10 +238,13 @@ public class GameControllManager : MonoBehaviour {
     }
 
     public void InputCallBack() {
-        string userName = nameInput.text;
-        string newId = mDatabaseRef.Child("users").Push().Key;
+        string userName1 = nameInput1.text;
+        string newId1 = mDatabaseRef.Child("users").Push().Key;
+        writeNewUser(newId1, userName1, players[1].getScore());
 
-        writeNewUser(newId, userName, score);
+        string userName2 = nameInput2.text;
+        string newId2 = mDatabaseRef.Child("users").Push().Key;
+        writeNewUser(newId2, userName2, players[2].getScore());
     }
 
     /* Generates new mission.
