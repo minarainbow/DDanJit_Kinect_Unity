@@ -282,7 +282,7 @@ public class GameControllManager : MonoBehaviour {
     public void OnCompletedMotion(int playerID)
     {
         Debug.Log("Player " + playerID.ToString() + " completed mission.");
-        double multiplier = players[playerID].isPunished() ? 1.5 : 1;
+        double multiplier = isPunishedMode ? 1.5 : 1;
         players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
         mission = generateMission();
         motionText.text = "Mission : " + mission;
@@ -307,7 +307,7 @@ public class GameControllManager : MonoBehaviour {
     public void OnSpotted(int playerID)
     {
         // Spotted twice. Game over.
-        if (players[playerID].isPunished())
+        if (isPunishedMode)
         {
             players[playerID].setDead();
             showProfessorText(professorGetOutText);
@@ -315,10 +315,8 @@ public class GameControllManager : MonoBehaviour {
         }
         else
         {
-            players[playerID].setPunished();
             showProfessorText(professorWarnText);
-            if (!isPunishedMode)
-                SetPunishMode();
+            SetPunishMode();
         }
     }
 
