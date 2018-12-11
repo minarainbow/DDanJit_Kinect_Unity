@@ -18,7 +18,8 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
-
+    public Button[] player1Motions;
+    public Button[] player2Motions;
 
     public float timeThreshold = 50;
 
@@ -53,6 +54,7 @@ public class GameControllManager : MonoBehaviour {
     Color color1 = Color.blue;
     float duration = 1.0f;
     float time;
+    Dictionary<string, Button>[] motions;
 
 
     DatabaseReference mDatabaseRef;
@@ -89,6 +91,8 @@ public class GameControllManager : MonoBehaviour {
         string[] player2Keys = { "/", "up", "left", "down", "right" };
         players[1].addKeyMap(player1Keys);
         players[2].addKeyMap(player2Keys);
+        motions = new Dictionary<string, Button>[2];
+        setMotions(player1Keys, player2Keys);
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
@@ -207,6 +211,10 @@ public class GameControllManager : MonoBehaviour {
                             }
                             // Add pressed key to corresponding player's motion list.
                             players[playerID].addMotion(players[playerID].keyMap[key]);
+                            setButtonNeutral();
+                            Button pressed = 
+                                motions[playerID - 1][key];
+                            pressed.image.color = color0;
                             break;
                         }
                     }
@@ -329,7 +337,6 @@ public class GameControllManager : MonoBehaviour {
         turnTrigger = true;
     }
 
-
     public void SetPunishMode()
     {
         Debug.Log("now punished mode\n");
@@ -355,5 +362,37 @@ public class GameControllManager : MonoBehaviour {
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;
+    }
+
+    void setMotions(string[] player1, string[] player2) {
+        Dictionary<string, Button> playerMotion1 = 
+            new Dictionary<string, Button>();
+
+        Dictionary<string, Button> playerMotion2 =
+            new Dictionary<string, Button>();
+        for (int i = 0; i < 4; i++) {
+            playerMotion1.Add(player1[i + 1], player1Motions[i]);
+        }
+
+        for (int j = 0; j < 4; j++) {
+            playerMotion2.Add(player2[j + 1], player2Motions[j]);
+        }
+
+        motions[0] = playerMotion1;
+        motions[1] = playerMotion2;
+    }
+
+    void setButtonNeutral() {
+        List<string> key1 = 
+            new List<string>(motions[0].Keys);
+        List<string> key2 =
+            new List<string>(motions[1].Keys);
+        for (int i = 0; i < 4; i++) {
+            motions[0][key1[i]].image.color = Color.white;
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            motions[1][key2[i]].image.color = Color.white;
+        }
     }
 }
