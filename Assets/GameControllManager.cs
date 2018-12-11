@@ -89,8 +89,8 @@ public class GameControllManager : MonoBehaviour {
 
         // Attach keymap to each player.
         // Note: z and / are temp. clap keys.
-        string[] player1Keys = { "z", "w", "a", "s", "d" };
-        string[] player2Keys = { "/", "up", "left", "down", "right" };
+        string[] player1Keys = { "left shift", "w", "a", "s", "d" };
+        string[] player2Keys = { "right shift", "up", "left", "down", "right" };
         players[1].addKeyMap(player1Keys);
         players[2].addKeyMap(player2Keys);
         motions = new Dictionary<string, Button>[2];
