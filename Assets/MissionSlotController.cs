@@ -3,6 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Mission
+{
+    public string motion;
+    public bool hasClap;
+    public int clapLocation;
+    public int score;
+
+    public Mission(string motion, bool hasClap, int clapLocation)
+    {
+        this.motion = motion;
+        this.hasClap = hasClap;
+        this.clapLocation = clapLocation;
+        this.score = (int)(motion.Length * (motion.Length + 1) / 2);
+    }
+}
+
+/* Not used. */
 public class MissionSlot
 {
     public enum SlotStatus { Normal, Blinking, Removed };

@@ -12,7 +12,7 @@ public class ProfessorController : MonoBehaviour {
     float time;
     float threshold = 1.0f;
     float randThreshold = 3.0f;
-    public static int stressGauge; // Indicator of profess turning probability.
+    public static float stressGauge; // Indicator of profess turning probability.
     
     bool toggleRot;
     
@@ -20,7 +20,7 @@ public class ProfessorController : MonoBehaviour {
 	void Start () {
         isTurned = false;
         toggleRot = false;
-        stressGauge = 0;
+        stressGauge = 0.0f;
         time = 0.0f;
 	}
 	
@@ -47,14 +47,21 @@ public class ProfessorController : MonoBehaviour {
                     isTurned = false;
                 }
             }
+            if (GameControllManager.turnTrigger)
+            {
+                // TODO: See if any regression bug occurs.
+                TurnAround();
+                GameControllManager.turnTrigger = false;
+            }
+            if (stressGauge >= 1.0f)
+            {
+                TurnAround();
+                stressGauge = 0.0f;
+            }
         }
-        if (GameControllManager.turnTrigger)
-        {
-            // TODO: See if any regression bug occurs.
-            TurnAround();
-            GameControllManager.turnTrigger = false;
-        }
-	}
+        if (stressGauge >= 0.0015f)
+            stressGauge -= 0.0015f;
+    }
 
     void TurnAround()
     {

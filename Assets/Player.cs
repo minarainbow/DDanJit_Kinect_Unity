@@ -77,6 +77,11 @@ public class Player {
         return claps;
     }
 
+    public void addClap()
+    {
+        claps++;
+    }
+
     public void useClap()
     {
         claps--;
