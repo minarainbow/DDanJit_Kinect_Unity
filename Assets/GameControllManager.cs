@@ -228,6 +228,7 @@ public class GameControllManager : MonoBehaviour {
                 // key input is matched to a player.
                 if (playerID <= playerNum)
                 {
+                    string motion = players[playerID].getMotion();
                     // Spotted by professor. Change game mode.
                     if (ProfessorController.isTurned)
                         OnSpotted(playerID);
@@ -243,19 +244,16 @@ public class GameControllManager : MonoBehaviour {
                         else
                         {
                             ProfessorController.stressGauge += 0.1f;
-                            string motion = players[playerID].getMotion();
 
                             if (mission.motion.StartsWith(motion))
-                            {
                                 OnCorrectMotion(playerID);
-                                if (mission.motion.Equals(motion))
-                                    OnCompletedMotion(playerID);
-
-                            }
                             else
                                 OnWrongMotion(playerID);
                         }
                     }
+                    if (mission.motion.Equals(motion))
+                        OnCompletedMotion(playerID);
+
                     motion1Text.text = players[1].getMotion();
                     motion2Text.text = players[2].getMotion();
                 }
