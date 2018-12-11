@@ -245,11 +245,10 @@ public class GameControllManager : MonoBehaviour {
                             }
                             else
                                 OnWrongMotion(playerID);
-
-                            motion1Text.text = players[1].getMotion();
-                            motion2Text.text = players[2].getMotion();
                         }
                     }
+                    motion1Text.text = players[1].getMotion();
+                    motion2Text.text = players[2].getMotion();
                 }
             }
 
