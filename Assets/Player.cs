@@ -29,7 +29,7 @@ public class Player {
 
     public void addKeyMap(string[] keys)
     {
-        int n = 1;
+        int n = 0;
         foreach (var key in keys)
         {
             keyMap.Add(key, n.ToString());
@@ -86,6 +86,11 @@ public class Player {
 
     public int getClaps() {
         return claps;
+    }
+
+    public void useClap()
+    {
+        claps--;
     }
 
     public int getType() {

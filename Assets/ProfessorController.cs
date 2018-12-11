@@ -26,34 +26,52 @@ public class ProfessorController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!GameControllManager.gameOver) {
+        if (!GameControllManager.gameOver)
+        {
             time += Time.deltaTime;
             if (!toggleRot) {
                 if (time >= randThreshold) {
-                    time = 0.0f;
-                    transform.rotation = Quaternion.Euler(0, 0, 0); // 똑바로 봐라.
-                    
-                    // TODO: set randThreshold again.
-                    randThreshold = Random.Range(randLeftRange, randRightRange);
-                    
-                    // TODO: set variables to turn around again.
-                    toggleRot = true;
-                    
-                    // TODO: set GameControllManager variable.
-                    isTurned = true;
+                    TurnAround();
                 }
             } else {
                 // TODO: turn around again.
-                if (time >= threshold) {
+
+                if (time >= threshold)
+                {
                     time = 0.0f;
                     transform.rotation = Quaternion.Euler(0, 180, 0);
-                    
+
                     toggleRot = false;
-                    
+
                     // TODO: set GameControllManager variable.
                     isTurned = false;
                 }
             }
         }
+        if (GameControllManager.turnTrigger)
+        {
+            // TODO: See if any regression bug occurs.
+            TurnAround();
+            GameControllManager.turnTrigger = false;
+        }
 	}
+
+    void TurnAround()
+    {
+        // No need for turning twice.
+        if (isTurned)
+            return;
+
+        time = 0.0f;
+        transform.rotation = Quaternion.Euler(0, 0, 0); // 똑바로 봐라.
+
+        // TODO: set randThreshold again.
+        randThreshold = Random.Range(randLeftRange, randRightRange);
+
+        // TODO: set variables to turn around again.
+        toggleRot = true;
+
+        isTurned = true;
+        // TODO: set GameControllManager variable.
+    }
 }

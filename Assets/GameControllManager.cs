@@ -9,6 +9,7 @@ using Firebase.Unity.Editor;
 public class GameControllManager : MonoBehaviour {
 
     public static bool gameOver;
+    public static bool turnTrigger;
     public static bool isPunishedMode;
     public static string mission;
     public static float timer;
@@ -63,6 +64,7 @@ public class GameControllManager : MonoBehaviour {
     void Start () {
         // speaker.Play();
         gameOver = false;
+        turnTrigger = false;
         isPunishedMode = false;
         gameOverText.enabled = false;
         finalScore1Text.enabled = false;
@@ -82,8 +84,9 @@ public class GameControllManager : MonoBehaviour {
         }
 
         // Attach keymap to each player.
-        string[] player1Keys = { "w", "a", "s", "d" };
-        string[] player2Keys = { "up", "left", "down", "right" };
+        // Note: z and / are temp. clap keys.
+        string[] player1Keys = { "z", "w", "a", "s", "d" };
+        string[] player2Keys = { "/", "up", "left", "down", "right" };
         players[1].addKeyMap(player1Keys);
         players[2].addKeyMap(player2Keys);
 
@@ -186,6 +189,7 @@ public class GameControllManager : MonoBehaviour {
             {
                 // Compare key input to players' keymap.
                 int playerID;
+                bool clapped = false;
                 for (playerID = 1; playerID <= playerNum; playerID++)
                 {
                     bool keyFound = false;
@@ -193,9 +197,16 @@ public class GameControllManager : MonoBehaviour {
                     {
                         if (Input.GetKeyDown(key))
                         {
+                            keyFound = true;
+                            // Player clapped.
+                            if (players[playerID].keyMap[key].Equals("0"))
+                            {
+                                clapped = true;
+                                // Do not add clap into player's motion list.
+                                break;
+                            }
                             // Add pressed key to corresponding player's motion list.
                             players[playerID].addMotion(players[playerID].keyMap[key]);
-                            keyFound = true;
                             break;
                         }
                     }
@@ -212,16 +223,23 @@ public class GameControllManager : MonoBehaviour {
                         OnSpotted(playerID);
                     else
                     {
-                        string motion = players[playerID].getMotion();
-                        if (mission.Equals(motion))
-                            OnCompletedMotion(playerID);
-                        else if (mission.StartsWith(motion))
-                            OnCorrectMotion(playerID);
+                        if (clapped)
+                        {
+                            OnClap(playerID);
+                        }
                         else
-                            OnWrongMotion(playerID);
+                        {
+                            string motion = players[playerID].getMotion();
+                            if (mission.Equals(motion))
+                                OnCompletedMotion(playerID);
+                            else if (mission.StartsWith(motion))
+                                OnCorrectMotion(playerID);
+                            else
+                                OnWrongMotion(playerID);
 
-                        motion1Text.text = players[1].getMotion();
-                        motion2Text.text = players[2].getMotion();
+                            motion1Text.text = players[1].getMotion();
+                            motion2Text.text = players[2].getMotion();
+                        }
                     }
                 }
             }
@@ -303,7 +321,17 @@ public class GameControllManager : MonoBehaviour {
                 SetPunishMode();
         }
     }
-    
+
+    public void OnClap (int playerID)
+    {
+        if (players[playerID].getClaps() <= 0)
+            return;
+
+        players[playerID].useClap();
+        turnTrigger = true;
+    }
+
+
     public void SetPunishMode()
     {
         Debug.Log("now punished mode\n");
