@@ -105,12 +105,6 @@ public class GameControllManager : MonoBehaviour {
         motions = new Dictionary<string, Button>[2];
         setMotions(player1Keys, player2Keys);
 
-        // Setting Firebase instance.
-        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
-
-        // Getting root reference from firebase.
-        mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-
         // Make a game object
         lightGameObject = new GameObject("The Light");
 
@@ -139,7 +133,13 @@ public class GameControllManager : MonoBehaviour {
         // For clock actions
         gameTotalThreshold = timeThreshold;
         gameTime = 0.0f;
-	}
+
+        // Setting Firebase instance.
+        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
+
+        // Getting root reference from firebase.
+        mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+    }
 
 	// Update is called once per frame
 	void Update () {
@@ -152,9 +152,6 @@ public class GameControllManager : MonoBehaviour {
             professorTextTimer -= 0.01f;
             if(professorTextTimer < 0.00f)
                 hideProfessorText();
-        }
-        if (timer < 0){
-            mission = generateMission();
         }
 
         if (gameOver)
