@@ -19,6 +19,8 @@ public class GameControllManager : MonoBehaviour {
     public Slider angerBarSlider;
     public Button[] player1Motions;
     public Button[] player2Motions;
+    public Text ClapNum1;
+    public Text ClapNum2;
 
     public float timeThreshold = 50;
 
@@ -183,10 +185,14 @@ public class GameControllManager : MonoBehaviour {
             // general mode
             score1Text.text = "Score: " + players[1].getScore();
             score2Text.text = "Score: " + players[2].getScore();
+            ClapNum1.text = "Claps Left: " + players[1].getClaps();
+            ClapNum2.text = "Claps Left: " + players[2].getClaps();
+
             // professor turned around
 
             if (Input.anyKeyDown)
             {
+                setButtonNeutral();
                 // Compare key input to players' keymap.
                 int playerID;
                 bool clapped = false;
@@ -207,7 +213,7 @@ public class GameControllManager : MonoBehaviour {
                             }
                             // Add pressed key to corresponding player's motion list.
                             players[playerID].addMotion(players[playerID].keyMap[key]);
-                            setButtonNeutral();
+                            Debug.Log("key: " + key);
                             Button pressed = 
                                 motions[playerID - 1][key];
                             pressed.image.color = color0;
@@ -229,6 +235,9 @@ public class GameControllManager : MonoBehaviour {
                     {
                         if (clapped)
                         {
+                            string key = new List<string>(motions[playerID - 1].Keys)[0];
+                            print("key");
+                            motions[playerID - 1][key].image.color = color0;
                             OnClap(playerID);
                         }
                         else
@@ -401,12 +410,12 @@ public class GameControllManager : MonoBehaviour {
 
         Dictionary<string, Button> playerMotion2 =
             new Dictionary<string, Button>();
-        for (int i = 0; i < 4; i++) {
-            playerMotion1.Add(player1[i + 1], player1Motions[i]);
+        for (int i = 0; i < 5; i++) {
+            playerMotion1.Add(player1[i], player1Motions[i]);
         }
 
-        for (int j = 0; j < 4; j++) {
-            playerMotion2.Add(player2[j + 1], player2Motions[j]);
+        for (int j = 0; j < 5; j++) {
+            playerMotion2.Add(player2[j], player2Motions[j]);
         }
 
         motions[0] = playerMotion1;
@@ -418,10 +427,11 @@ public class GameControllManager : MonoBehaviour {
             new List<string>(motions[0].Keys);
         List<string> key2 =
             new List<string>(motions[1].Keys);
-        for (int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < 5; i++) {
             motions[0][key1[i]].image.color = Color.white;
         }
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             motions[1][key2[i]].image.color = Color.white;
         }
