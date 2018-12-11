@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player {
+
+    bool punished;
     bool dead;
     int score;
     int claps;
+    public AudioSource playerSpeaker;
+    public AudioClip passSound;
+    public AudioClip clapSound;
 
     string motions; // 1 = up 2 = down 3 = left 4 = right
     int motion_count;
@@ -15,6 +20,7 @@ public class Player {
 
     public Player(int type) {
         this.dead = false;
+        this.punished = false;
         this.score = 0;
         this.claps = 1; // 지금 현재는 1개만 주는 걸로.
 
@@ -22,6 +28,8 @@ public class Player {
         this.motion_count = 0;
         this.motions = null;
         this.keyMap = new Dictionary<string, string>();
+        this.clapSound = (AudioClip) Resources.Load("Sounds/clapSound");
+        this.passSound = (AudioClip) Resources.Load("Sounds/passSound");
     }
 
     public void addKeyMap(string[] keys)
@@ -61,8 +69,16 @@ public class Player {
         return true;
     }
 
+    public bool isPunished() {
+        return punished;
+    }
+
     public bool isDead() {
         return dead;
+    }
+
+    public void setPunished() {
+        this.punished = true;
     }
 
     public void setDead() {
@@ -77,13 +93,11 @@ public class Player {
         return claps;
     }
 
-    public void addClap()
-    {
-        claps++;
-    }
-
     public void useClap()
     {
+        Debug.Log("useClap()");
+        // this.playerSpeaker.clip = this.clapSound;
+        playerSpeaker.Play();
         claps--;
     }
 

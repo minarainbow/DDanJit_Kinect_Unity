@@ -9499,8 +9499,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speaker: {fileID: 0}
-  gameOverSound: {fileID: 1896971802597358, guid: c6ac98ebf7c174ba9aaf89b3fb1fa186,
-    type: 2}
+  playerSpeaker: {fileID: 0}
+  gameOverSound: {fileID: 8300000, guid: 3f1416adb61b24c7985e327c7acb10a3, type: 3}
+  clapSound: {fileID: 8300000, guid: b2a3113894d5049dd9c520b799a50217, type: 3}
+  passSound: {fileID: 8300000, guid: 91664a071b18544cbb92fbea3ea5d70b, type: 3}
+  pewSound: {fileID: 8300000, guid: bc6942782d29f4d43baa73eaa55d43dc, type: 3}
+  yeahSound: {fileID: 8300000, guid: ca83ca20839d148e5ac9fd0ded2ad6cd, type: 3}
+  punishedSound: {fileID: 8300000, guid: 9a80e64a3603c4ef8a483c547e54a9f3, type: 3}
   angerBarSlider: {fileID: 1039914846}
   player1Motions:
   - {fileID: 515736076}
@@ -9564,7 +9569,7 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2112100880}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2cbf6c4deb259415491d4eac2a9d6037, type: 3}
@@ -9662,7 +9667,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bddab39a2857b462ca4aef1b6dbe7f97, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 998b0dce543304a4b891c518999c9568, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

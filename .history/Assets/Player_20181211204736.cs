@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player {
+
+    bool punished;
     bool dead;
     int score;
     int claps;
+    public AudioSource speaker;
+    public AudioClip clapSound;
 
     string motions; // 1 = up 2 = down 3 = left 4 = right
     int motion_count;
@@ -15,6 +19,7 @@ public class Player {
 
     public Player(int type) {
         this.dead = false;
+        this.punished = false;
         this.score = 0;
         this.claps = 1; // 지금 현재는 1개만 주는 걸로.
 
@@ -61,8 +66,16 @@ public class Player {
         return true;
     }
 
+    public bool isPunished() {
+        return punished;
+    }
+
     public bool isDead() {
         return dead;
+    }
+
+    public void setPunished() {
+        this.punished = true;
     }
 
     public void setDead() {
@@ -77,13 +90,9 @@ public class Player {
         return claps;
     }
 
-    public void addClap()
-    {
-        claps++;
-    }
-
     public void useClap()
     {
+
         claps--;
     }
 

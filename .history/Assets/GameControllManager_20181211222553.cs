@@ -11,6 +11,7 @@ public class GameControllManager : MonoBehaviour {
     public static bool gameOver;
     public static bool turnTrigger;
     public static bool isPunishedMode;
+    public static string mission;
     public static float timer;
     public AudioSource speaker;
     public AudioSource playerSpeaker;
@@ -23,10 +24,7 @@ public class GameControllManager : MonoBehaviour {
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
-    public Button[] player1Motions;
-    public Button[] player2Motions;
-    public Text ClapNum1;
-    public Text ClapNum2;
+
 
     public float timeThreshold = 50;
 
@@ -40,7 +38,6 @@ public class GameControllManager : MonoBehaviour {
     int playerNum = 2;
     public static Player[] players;
 
-    public static Mission mission;
     int missionMinLength = 4;
     int missionMaxLength = 8;
 
@@ -62,13 +59,12 @@ public class GameControllManager : MonoBehaviour {
     Color color1 = Color.blue;
     float duration = 1.0f;
     float time;
-    Dictionary<string, Button>[] motions;
 
 
     DatabaseReference mDatabaseRef;
 
-    // List<MissionSlot> missionSlots = new List<MissionSlot>(4);
-    // MissionSlotController msc = new MissionSlotController(2);
+    List<MissionSlot> missionSlots = new List<MissionSlot>(4);
+    MissionSlotController msc = new MissionSlotController(2);
 
     // Use this for initialization
     void Start () {
@@ -98,12 +94,10 @@ public class GameControllManager : MonoBehaviour {
 
         // Attach keymap to each player.
         // Note: z and / are temp. clap keys.
-        string[] player1Keys = { "left shift", "w", "a", "s", "d" };
-        string[] player2Keys = { "right shift", "up", "left", "down", "right" };
+        string[] player1Keys = { "z", "w", "a", "s", "d" };
+        string[] player2Keys = { "/", "up", "left", "down", "right" };
         players[1].addKeyMap(player1Keys);
         players[2].addKeyMap(player2Keys);
-        motions = new Dictionary<string, Button>[2];
-        setMotions(player1Keys, player2Keys);
 
         // Setting Firebase instance.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://ddanjit-f2f5d.firebaseio.com/");
@@ -134,6 +128,7 @@ public class GameControllManager : MonoBehaviour {
         motionText.color = Color.blue;
 
         mission = generateMission();
+        motionText.text = "Mission : " + mission;
         timer = 20.0f;
 
         // For clock actions
@@ -155,6 +150,7 @@ public class GameControllManager : MonoBehaviour {
         }
         if (timer < 0){
             mission = generateMission();
+            motionText.text = "Mission : " + mission;
         }
 
         if (gameOver)
@@ -190,14 +186,12 @@ public class GameControllManager : MonoBehaviour {
             // general mode
             score1Text.text = "Score: " + players[1].getScore();
             score2Text.text = "Score: " + players[2].getScore();
-            ClapNum1.text = "Claps Left: " + players[1].getClaps();
-            ClapNum2.text = "Claps Left: " + players[2].getClaps();
 
+            motionText.text = "Mission : " + mission;
             // professor turned around
 
             if (Input.anyKeyDown)
             {
-                setButtonNeutral();
                 // Compare key input to players' keymap.
                 int playerID;
                 bool clapped = false;
@@ -218,10 +212,6 @@ public class GameControllManager : MonoBehaviour {
                             }
                             // Add pressed key to corresponding player's motion list.
                             players[playerID].addMotion(players[playerID].keyMap[key]);
-                            Debug.Log("key: " + key);
-                            Button pressed = 
-                                motions[playerID - 1][key];
-                            pressed.image.color = color0;
                             break;
                         }
                     }
@@ -233,7 +223,6 @@ public class GameControllManager : MonoBehaviour {
                 // key input is matched to a player.
                 if (playerID <= playerNum)
                 {
-                    string motion = players[playerID].getMotion();
                     // Spotted by professor. Change game mode.
                     if (ProfessorController.isTurned)
                         OnSpotted(playerID);
@@ -241,32 +230,26 @@ public class GameControllManager : MonoBehaviour {
                     {
                         if (clapped)
                         {
-                            string key = new List<string>(motions[playerID - 1].Keys)[0];
-                            print("key");
-                            motions[playerID - 1][key].image.color = color0;
                             OnClap(playerID);
                         }
                         else
                         {
-                            ProfessorController.stressGauge += 0.1f;
-
-                            if (mission.motion.StartsWith(motion))
+                            string motion = players[playerID].getMotion();
+                            if (mission.Equals(motion))
+                                OnCompletedMotion(playerID);
+                            else if (mission.StartsWith(motion))
                                 OnCorrectMotion(playerID);
                             else
                                 OnWrongMotion(playerID);
+
+                            motion1Text.text = players[1].getMotion();
+                            motion2Text.text = players[2].getMotion();
                         }
                     }
-                    if (mission.motion.Equals(motion))
-                        OnCompletedMotion(playerID);
-
-                    motion1Text.text = players[1].getMotion();
-                    motion2Text.text = players[2].getMotion();
                 }
             }
 
-            angerBarSlider.value = ProfessorController.stressGauge;
-
-            //missionSlots = msc.GetCurrentMissionSlots();
+            missionSlots = msc.GetCurrentMissionSlots();
         }
 	}
 
@@ -290,37 +273,15 @@ public class GameControllManager : MonoBehaviour {
     /* Generates new mission.
      * Motion length is randomly chosen in range 4~8.
      * Keys: 1 - up, 2 - left, 3 - down, 4 - right */
-    public Mission generateMission()
+    public string generateMission()
     {
         string motion = null;
         int motionLength = Random.Range(missionMinLength, missionMaxLength + 1);
-
-        bool hasClap = false;
-        int clapLocation = -1;
-        if (Random.Range(0, 1) < 0.1f)
-        {
-            hasClap = true;
-            clapLocation = Random.Range(0, motionLength);
-
-        }
         for (int i = 0; i < motionLength; i++)
-        {
             motion += Random.Range(1, 5).ToString();
-        }
 
-        // msc.SpawnMissionSlot(motion);
-        string missiontext = "Mission : ";
-        Mission mission = new Mission(motion, hasClap, clapLocation);
-        int prefixLength = missiontext.Length;
-        missiontext += motion;
-        if (hasClap)
-        {
-            char clapMotion = motion[clapLocation];
-            missiontext = missiontext.Remove(clapLocation + prefixLength, 1).Insert(clapLocation + prefixLength, 
-                "<color=red>" + clapMotion + "</color>");
-        }
-        motionText.text = missiontext;
-        return mission;
+        msc.SpawnMissionSlot(motion);
+        return motion;
     }
 
     public void OnCompletedMotion(int playerID)
@@ -329,8 +290,9 @@ public class GameControllManager : MonoBehaviour {
         playerSpeaker.PlayOneShot(passSound);
         Debug.Log("Player " + playerID.ToString() + " completed mission.");
         double multiplier = isPunishedMode ? 1.5 : 1;
-        players[playerID].addScore((int)(mission.score * multiplier));
+        players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
         mission = generateMission();
+        motionText.text = "Mission : " + mission;
 
         for (var i = 1; i <= playerNum; i++)
             players[i].clearMotion();
@@ -338,18 +300,11 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion(int playerID)
     {
+        playerSpeaker.volume *= 3.0f;
         playerSpeaker.clip = yeahSound;
         playerSpeaker.PlayOneShot(yeahSound);
+        playerSpeaker.volume /= 3.0f;
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
-        string motion = players[playerID].getMotion();
-        if (mission.hasClap && motion.Length - 1 == mission.clapLocation)
-        {
-            players[playerID].addClap();
-            mission.hasClap = false;
-            mission.clapLocation = -1;
-            motionText.text = motionText.text.Replace("<color=red>", "");
-            motionText.text = motionText.text.Replace("</color>", "");
-        }
     }
 
     public void OnWrongMotion(int playerID)
@@ -388,6 +343,7 @@ public class GameControllManager : MonoBehaviour {
         turnTrigger = true;
     }
 
+
     public void SetPunishMode()
     {
         playerSpeaker.clip = punishedSound;
@@ -395,6 +351,7 @@ public class GameControllManager : MonoBehaviour {
         Debug.Log("now punished mode\n");
         isPunishedMode = true;
         showProfessorText(professorWarnText);
+        angerBarSlider.value = 0.5f;
         // Set color and position
         lightComp.color = Color.red;
         lightGameObject.transform.position = new Vector3(0, 5, 0);
@@ -414,38 +371,5 @@ public class GameControllManager : MonoBehaviour {
         professorAnnoyedText.enabled = false;
         professorWarnText.enabled = false;
         professorGetOutText.enabled = false;
-    }
-
-    void setMotions(string[] player1, string[] player2) {
-        Dictionary<string, Button> playerMotion1 = 
-            new Dictionary<string, Button>();
-
-        Dictionary<string, Button> playerMotion2 =
-            new Dictionary<string, Button>();
-        for (int i = 0; i < 5; i++) {
-            playerMotion1.Add(player1[i], player1Motions[i]);
-        }
-
-        for (int j = 0; j < 5; j++) {
-            playerMotion2.Add(player2[j], player2Motions[j]);
-        }
-
-        motions[0] = playerMotion1;
-        motions[1] = playerMotion2;
-    }
-
-    void setButtonNeutral() {
-        List<string> key1 = 
-            new List<string>(motions[0].Keys);
-        List<string> key2 =
-            new List<string>(motions[1].Keys);
-
-        for (int i = 0; i < 5; i++) {
-            motions[0][key1[i]].image.color = Color.white;
-        }
-        for (int i = 0; i < 5; i++)
-        {
-            motions[1][key2[i]].image.color = Color.white;
-        }
     }
 }
