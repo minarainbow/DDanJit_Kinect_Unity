@@ -225,6 +225,7 @@ public class GameControllManager : MonoBehaviour {
                         }
                         else
                         {
+                            ProfessorController.stressGauge += 0.1f;
                             string motion = players[playerID].getMotion();
 
                             if (mission.motion.StartsWith(motion))
@@ -243,6 +244,8 @@ public class GameControllManager : MonoBehaviour {
                     }
                 }
             }
+
+            angerBarSlider.value = ProfessorController.stressGauge;
 
             //missionSlots = msc.GetCurrentMissionSlots();
         }
@@ -365,7 +368,6 @@ public class GameControllManager : MonoBehaviour {
         Debug.Log("now punished mode\n");
         isPunishedMode = true;
         showProfessorText(professorWarnText);
-        angerBarSlider.value = 0.5f;
         // Set color and position
         lightComp.color = Color.red;
         lightGameObject.transform.position = new Vector3(0, 5, 0);
