@@ -11,7 +11,6 @@ public class GameControllManager : MonoBehaviour {
     public static bool gameOver;
     public static bool turnTrigger;
     public static bool isPunishedMode;
-    public static string mission;
     public static float timer;
     public AudioSource speaker;
     public GameObject gameOverSound;
@@ -32,6 +31,7 @@ public class GameControllManager : MonoBehaviour {
     int playerNum = 2;
     public static Player[] players;
 
+    public static Mission mission;
     int missionMinLength = 4;
     int missionMaxLength = 8;
 
@@ -57,8 +57,8 @@ public class GameControllManager : MonoBehaviour {
 
     DatabaseReference mDatabaseRef;
 
-    List<MissionSlot> missionSlots = new List<MissionSlot>(4);
-    MissionSlotController msc = new MissionSlotController(2);
+    // List<MissionSlot> missionSlots = new List<MissionSlot>(4);
+    // MissionSlotController msc = new MissionSlotController(2);
 
     // Use this for initialization
     void Start () {
@@ -119,7 +119,6 @@ public class GameControllManager : MonoBehaviour {
         motionText.color = Color.blue;
 
         mission = generateMission();
-        motionText.text = "Mission : " + mission;
         timer = 20.0f;
 
         speaker = GetComponent<AudioSource>();
@@ -143,7 +142,6 @@ public class GameControllManager : MonoBehaviour {
         }
         if (timer < 0){
             mission = generateMission();
-            motionText.text = "Mission : " + mission;
         }
 
         if (gameOver)
@@ -181,8 +179,6 @@ public class GameControllManager : MonoBehaviour {
             // general mode
             score1Text.text = "Score: " + players[1].getScore();
             score2Text.text = "Score: " + players[2].getScore();
-
-            motionText.text = "Mission : " + mission;
             // professor turned around
 
             if (Input.anyKeyDown)
@@ -230,10 +226,14 @@ public class GameControllManager : MonoBehaviour {
                         else
                         {
                             string motion = players[playerID].getMotion();
-                            if (mission.Equals(motion))
-                                OnCompletedMotion(playerID);
-                            else if (mission.StartsWith(motion))
+
+                            if (mission.motion.StartsWith(motion))
+                            {
                                 OnCorrectMotion(playerID);
+                                if (mission.motion.Equals(motion))
+                                    OnCompletedMotion(playerID);
+
+                            }
                             else
                                 OnWrongMotion(playerID);
 
@@ -244,7 +244,7 @@ public class GameControllManager : MonoBehaviour {
                 }
             }
 
-            missionSlots = msc.GetCurrentMissionSlots();
+            //missionSlots = msc.GetCurrentMissionSlots();
         }
 	}
 
@@ -268,24 +268,45 @@ public class GameControllManager : MonoBehaviour {
     /* Generates new mission.
      * Motion length is randomly chosen in range 4~8.
      * Keys: 1 - up, 2 - left, 3 - down, 4 - right */
-    public string generateMission()
+    public Mission generateMission()
     {
         string motion = null;
         int motionLength = Random.Range(missionMinLength, missionMaxLength + 1);
-        for (int i = 0; i < motionLength; i++)
-            motion += Random.Range(1, 5).ToString();
 
-        msc.SpawnMissionSlot(motion);
-        return motion;
+        bool hasClap = false;
+        int clapLocation = -1;
+        if (Random.Range(0, 1) < 0.1f)
+        {
+            hasClap = true;
+            clapLocation = Random.Range(0, motionLength);
+
+        }
+        for (int i = 0; i < motionLength; i++)
+        {
+            motion += Random.Range(1, 5).ToString();
+        }
+
+        // msc.SpawnMissionSlot(motion);
+        string missiontext = "Mission : ";
+        Mission mission = new Mission(motion, hasClap, clapLocation);
+        int prefixLength = missiontext.Length;
+        missiontext += motion;
+        if (hasClap)
+        {
+            char clapMotion = motion[clapLocation];
+            missiontext = missiontext.Remove(clapLocation + prefixLength, 1).Insert(clapLocation + prefixLength, 
+                "<color=red>" + clapMotion + "</color>");
+        }
+        motionText.text = missiontext;
+        return mission;
     }
 
     public void OnCompletedMotion(int playerID)
     {
         Debug.Log("Player " + playerID.ToString() + " completed mission.");
         double multiplier = isPunishedMode ? 1.5 : 1;
-        players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
+        players[playerID].addScore((int)(mission.score * multiplier));
         mission = generateMission();
-        motionText.text = "Mission : " + mission;
 
         for (var i = 1; i <= playerNum; i++)
             players[i].clearMotion();
@@ -294,6 +315,15 @@ public class GameControllManager : MonoBehaviour {
     public void OnCorrectMotion(int playerID)
     {
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
+        string motion = players[playerID].getMotion();
+        if (mission.hasClap && motion.Length - 1 == mission.clapLocation)
+        {
+            players[playerID].addClap();
+            mission.hasClap = false;
+            mission.clapLocation = -1;
+            motionText.text = motionText.text.Replace("<color=red>", "");
+            motionText.text = motionText.text.Replace("</color>", "");
+        }
     }
 
     public void OnWrongMotion(int playerID)
