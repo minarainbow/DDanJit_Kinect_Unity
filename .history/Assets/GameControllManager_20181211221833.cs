@@ -19,7 +19,7 @@ public class GameControllManager : MonoBehaviour {
     public AudioClip clapSound;
     public AudioClip passSound;
     public AudioClip pewSound;
-    public AudioClip yeahSound;
+    public AudioClip eachSound;
     public AudioClip punishedSound;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
@@ -300,8 +300,8 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion(int playerID)
     {
-        playerSpeaker.clip = yeahSound;
-        playerSpeaker.PlayOneShot(yeahSound);
+        playerSpeaker.clip = eachSound;
+        playerSpeaker.PlayOneShot(eachSound);
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
     }
 

@@ -19,8 +19,7 @@ public class GameControllManager : MonoBehaviour {
     public AudioClip clapSound;
     public AudioClip passSound;
     public AudioClip pewSound;
-    public AudioClip yeahSound;
-    public AudioClip punishedSound;
+    public AudioClip eachSound;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
@@ -300,15 +299,11 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion(int playerID)
     {
-        playerSpeaker.clip = yeahSound;
-        playerSpeaker.PlayOneShot(yeahSound);
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
     }
 
     public void OnWrongMotion(int playerID)
     {
-        playerSpeaker.clip = pewSound;
-        playerSpeaker.PlayOneShot(pewSound);
         Debug.Log("Player " + playerID.ToString() + " wrong motion.");
 
         // Clear player's motion.
@@ -344,8 +339,6 @@ public class GameControllManager : MonoBehaviour {
 
     public void SetPunishMode()
     {
-        playerSpeaker.clip = punishedSound;
-        playerSpeaker.PlayOneShot(punishedSound);
         Debug.Log("now punished mode\n");
         isPunishedMode = true;
         showProfessorText(professorWarnText);

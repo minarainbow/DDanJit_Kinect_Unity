@@ -14,13 +14,7 @@ public class GameControllManager : MonoBehaviour {
     public static string mission;
     public static float timer;
     public AudioSource speaker;
-    public AudioSource playerSpeaker;
     public AudioClip gameOverSound;
-    public AudioClip clapSound;
-    public AudioClip passSound;
-    public AudioClip pewSound;
-    public AudioClip yeahSound;
-    public AudioClip punishedSound;
     public static float gameTime; // for total game time.
     public static float gameTotalThreshold; // get timeThreshold & send it to Clock class.
     public Slider angerBarSlider;
@@ -82,9 +76,6 @@ public class GameControllManager : MonoBehaviour {
         professorGetOutText.enabled = false;
         panel.SetActive(false);
 
-        speaker = GetComponents<AudioSource>()[0];
-        playerSpeaker = GetComponents<AudioSource>()[1];
-
         // Initialize players.
         players = new Player[playerNum + 1];
         for (var i = 1; i <= playerNum; i++)
@@ -131,6 +122,8 @@ public class GameControllManager : MonoBehaviour {
         motionText.text = "Mission : " + mission;
         timer = 20.0f;
 
+        speaker = GetComponent<AudioSource>();
+
         // For clock actions
         gameTotalThreshold = timeThreshold;
         gameTime = 0.0f;
@@ -157,10 +150,15 @@ public class GameControllManager : MonoBehaviour {
         {
             if (nameInput1.enabled == false)
             {
+                Debug.Log("speaker playing");
                 speaker.Pause();
                 speaker.clip = gameOverSound;
-                speaker.PlayOneShot(gameOverSound);
+                speaker.Play();
             }
+            else{
+                speaker.Pause();
+            }
+
             score1Text.text = ":(";
             score2Text.text = ":(";
 
@@ -286,8 +284,6 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCompletedMotion(int playerID)
     {
-        playerSpeaker.clip = passSound;
-        playerSpeaker.PlayOneShot(passSound);
         Debug.Log("Player " + playerID.ToString() + " completed mission.");
         double multiplier = isPunishedMode ? 1.5 : 1;
         players[playerID].addScore((int)(msc.OnCorrectAnswer(mission) * multiplier));
@@ -300,15 +296,11 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion(int playerID)
     {
-        playerSpeaker.clip = yeahSound;
-        playerSpeaker.PlayOneShot(yeahSound);
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
     }
 
     public void OnWrongMotion(int playerID)
     {
-        playerSpeaker.clip = pewSound;
-        playerSpeaker.PlayOneShot(pewSound);
         Debug.Log("Player " + playerID.ToString() + " wrong motion.");
 
         // Clear player's motion.
@@ -335,8 +327,7 @@ public class GameControllManager : MonoBehaviour {
     {
         if (players[playerID].getClaps() <= 0)
             return;
-        playerSpeaker.clip = clapSound;
-        playerSpeaker.PlayOneShot(clapSound);
+
         players[playerID].useClap();
         turnTrigger = true;
     }
@@ -344,8 +335,6 @@ public class GameControllManager : MonoBehaviour {
 
     public void SetPunishMode()
     {
-        playerSpeaker.clip = punishedSound;
-        playerSpeaker.PlayOneShot(punishedSound);
         Debug.Log("now punished mode\n");
         isPunishedMode = true;
         showProfessorText(professorWarnText);

@@ -300,8 +300,10 @@ public class GameControllManager : MonoBehaviour {
 
     public void OnCorrectMotion(int playerID)
     {
+        playerSpeaker.volume *= 5.0f;
         playerSpeaker.clip = yeahSound;
         playerSpeaker.PlayOneShot(yeahSound);
+        playerSpeaker.volume /= 5.0f;
         Debug.Log("Player " + playerID.ToString() + " correct motion.");
     }
 

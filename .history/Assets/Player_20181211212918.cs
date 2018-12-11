@@ -8,6 +8,9 @@ public class Player {
     bool dead;
     int score;
     int claps;
+    public AudioSource playerSpeaker;
+    public AudioClip passSound;
+    public AudioClip clapSound;
 
     string motions; // 1 = up 2 = down 3 = left 4 = right
     int motion_count;
@@ -25,6 +28,8 @@ public class Player {
         this.motion_count = 0;
         this.motions = null;
         this.keyMap = new Dictionary<string, string>();
+        this.clapSound = (AudioClip) Resources.Load("Sounds/clapSound");
+        this.passSound = (AudioClip) Resources.Load("Sounds/passSound");
     }
 
     public void addKeyMap(string[] keys)
@@ -90,6 +95,10 @@ public class Player {
 
     public void useClap()
     {
+        Debug.Log("useClap()");
+        // playerSpeaker = GetComponent<AudioSource>();
+        playerSpeaker.clip = this.clapSound;
+        playerSpeaker.Play();
         claps--;
     }
 

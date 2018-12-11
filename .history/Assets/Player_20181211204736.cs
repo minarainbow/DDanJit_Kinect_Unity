@@ -8,6 +8,8 @@ public class Player {
     bool dead;
     int score;
     int claps;
+    public AudioSource speaker;
+    public AudioClip clapSound;
 
     string motions; // 1 = up 2 = down 3 = left 4 = right
     int motion_count;
@@ -90,6 +92,7 @@ public class Player {
 
     public void useClap()
     {
+
         claps--;
     }
 
